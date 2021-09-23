@@ -42,6 +42,9 @@ public class SingleStarServlet extends HttpServlet {
         // Retrieve parameter id from url request.
         String id = request.getParameter("id");
 
+        // The log message can be found in localhost log
+        request.getServletContext().log("getting id: " + id);
+
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
@@ -93,25 +96,26 @@ public class SingleStarServlet extends HttpServlet {
             rs.close();
             statement.close();
 
-            // write JSON string to output
+            // Write JSON string to output
             out.write(jsonArray.toString());
-            // set response status to 200 (OK)
+            // Set response status to 200 (OK)
             response.setStatus(200);
 
         } catch (Exception e) {
-            // write error message JSON object to output
+            // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("errorMessage", e.getMessage());
             out.write(jsonObject.toString());
 
-            // set response status to 500 (Internal Server Error)
+            // Log error to localhost log
+            request.getServletContext().log("Error:", e);
+            // Set response status to 500 (Internal Server Error)
             response.setStatus(500);
         } finally {
             out.close();
         }
 
-        // always remember to close db connection after usage. Here it's done by try-with-resources
-
+        // Always remember to close db connection after usage. Here it's done by try-with-resources
 
     }
 

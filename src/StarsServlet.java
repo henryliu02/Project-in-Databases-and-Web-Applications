@@ -72,25 +72,28 @@ public class StarsServlet extends HttpServlet {
             rs.close();
             statement.close();
 
-            // write JSON string to output
-            out.write(jsonArray.toString());
-            // set response status to 200 (OK)
-            response.setStatus(200);
+            // Log to localhost log
+            request.getServletContext().log("getting " + jsonArray.size() + " results");
 
+            // Write JSON string to output
+            out.write(jsonArray.toString());
+            // Set response status to 200 (OK)
+            response.setStatus(200);
 
         } catch (Exception e) {
 
-            // write error message JSON object to output
+            // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("errorMessage", e.getMessage());
             out.write(jsonObject.toString());
 
-            // set response status to 500 (Internal Server Error)
+            // Set response status to 500 (Internal Server Error)
             response.setStatus(500);
         } finally {
             out.close();
         }
-        // always remember to close db connection after usage. Here it's done by try-with-resources
+
+        // Always remember to close db connection after usage. Here it's done by try-with-resources
 
     }
 }
