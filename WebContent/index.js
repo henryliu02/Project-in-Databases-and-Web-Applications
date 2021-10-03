@@ -72,20 +72,3 @@ $.ajax("api/index", {
 
 // Bind the submit action of the form to a event handler function
 cart.submit(handleCartInfo);
-
-// $.ajax({
-//     type: "POST",
-//     url: "/api/shoppingcart",
-//     data: {
-//         action: "get_movie_id"
-//     },
-//     success: function(movie_id) {
-//         if (movie_id) {
-//             // Fetch movie details using movie_id (e.g., make a GET request to your API or servlet)
-//             // Display the movie in the shopping list
-//         }
-//     },
-//     error: function(error) {
-//         console.error("Error:", error);
-//     }
-// });
