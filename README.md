@@ -8,7 +8,7 @@
 ### Features
 1. This example application allows you to login with the username and password provided above.
 2. When you land on the welcome page, it will show your current session ID and last access time. 
-3. It also simulates a shopping cart feature. When you type in items that you want to store in the current session and then click `add`, the web page will show the a list of items that consist of your previous items and the one you just added. When you refresh the page and add more items, the list that the web page shows will contain all the items that you have added to the list in this session. 
+3. It also simulates a shopping cart feature. When you type in items that you want to store in the current session and then click `add`, the web page will show a list of items that consist of your previous items, and the one you just added. When you refresh the page and add more items, the list that the web page shows will contain all the items that you have added to the list in this session. 
 
 ### Brief Explanation
 
