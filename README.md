@@ -58,12 +58,12 @@ mysql> quit;
 ```
 
 ### To run this example: 
-1. Clone this repository using `git clone https://github.com/UCI-Chenli-teaching/cs122b-fall21-project1-api-example.git`
+1. Clone this repository using `git clone https://github.com/uci-jherold2-teaching/cs122b-fall22-project1-api-example.git`
 2. Open IntelliJ -> Import Project -> Choose the project you just cloned (The root path must contain the pom.xml!) -> Choose Import project from external model -> choose Maven -> Click on Finish -> The IntelliJ will load automatically
-3. For "Root Directory", right click "cs122b-fall21-project1-api-example" -> Mark Directory as -> sources root
+3. For "Root Directory", right click "cs122b-fall22-project1-api-example" -> Mark Directory as -> sources root
 4. In `WebContent/META-INF/context.xml`, make sure the mysql username is `mytestuser` and password is `mypassword`.
 5. Also make sure you have the `moviedbexample` database.
-6. To run the example, follow the instructions in [canvas](https://canvas.eee.uci.edu/courses/40150/pages/intellij-idea-tomcat-configuration)
+6. To run the example, follow the instructions in [canvas](https://canvas.eee.uci.edu/courses/50103/pages/intellij-idea-tomcat-configuration)
 
 ### Brief Explanation
 - `StarsServlet.java` is a Java servlet that talks to the database and get the stars. It returns a list of stars in the JSON format. 
