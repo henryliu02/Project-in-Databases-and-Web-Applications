@@ -1,16 +1,11 @@
-### To run this example:
-1. Clone this repository using `git clone https://github.com/UCI-Chenli-teaching/cs122b-fall21-project2-login-cart-example.git`
-2. Open IntelliJ -> Import Project -> Choose the project you just cloned (The root path must contain the pom.xml!) -> Choose Import project from external model -> choose Maven -> Click on Finish -> The IntelliJ will load automatically
-3. For "Root Directory", right click "cs122b-fall21-project2-login-cart-example" -> Mark Directory as -> sources root
-4. In Tomcat Deployment Configuration, make sure the application context is: /cs122b-fall21-project2-login-cart-example
-5. To run the example, follow the instructions in [canvas](https://canvas.eee.uci.edu/courses/40150/pages/intellij-idea-tomcat-configuration). The default username is `anteater` and password is `123456` .
-
 ### Features
 1. This example application allows you to login with the username and password provided above.
 2. When you land on the welcome page, it will show your current session ID and last access time. 
 3. It also simulates a shopping cart feature. When you type in items that you want to store in the current session and then click `add`, the web page will show a list of items that consist of your previous items, and the one you just added. When you refresh the page and add more items, the list that the web page shows will contain all the items that you have added to the list in this session. 
 
 ### Brief Explanation
+
+- The default username is `anteater` and password is `123456` .
 
 - `login.html` contains the login form. In the `form` tag with `id=login_form`, the action is disabled so that we can implement our own logic with the `submit` event. It also includes jQuery and `login.js`.
 

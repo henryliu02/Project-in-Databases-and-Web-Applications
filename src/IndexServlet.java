@@ -1,11 +1,11 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 
-import javax.servlet.annotation.WebServlet;
-import javax.servlet.http.HttpServlet;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
+import jakarta.servlet.annotation.WebServlet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
@@ -31,7 +31,7 @@ public class IndexServlet extends HttpServlet {
 
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
         if (previousItems == null) {
-            previousItems = new ArrayList<>();
+            previousItems = new ArrayList<String>();
         }
         // Log to localhost log
         request.getServletContext().log("getting " + previousItems.size() + " items");
@@ -54,7 +54,7 @@ public class IndexServlet extends HttpServlet {
         // get the previous items in a ArrayList
         ArrayList<String> previousItems = (ArrayList<String>) session.getAttribute("previousItems");
         if (previousItems == null) {
-            previousItems = new ArrayList<>();
+            previousItems = new ArrayList<String>();
             previousItems.add(item);
             session.setAttribute("previousItems", previousItems);
         } else {
