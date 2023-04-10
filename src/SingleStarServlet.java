@@ -25,7 +25,7 @@ public class SingleStarServlet extends HttpServlet {
 
     public void init(ServletConfig config) {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbexample");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
         } catch (NamingException e) {
             e.printStackTrace();
         }
@@ -74,6 +74,10 @@ public class SingleStarServlet extends HttpServlet {
                 String starId = rs.getString("starId");
                 String starName = rs.getString("name");
                 String starDob = rs.getString("birthYear");
+
+                // if dob is null replace with n/a
+                if (starDob == null)
+                    starDob = "n/a";
 
                 String movieId = rs.getString("movieId");
                 String movieTitle = rs.getString("title");
