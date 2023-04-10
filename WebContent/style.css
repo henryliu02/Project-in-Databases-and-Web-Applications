@@ -1,0 +1,48 @@
+h1 {
+    margin-top: 3%;
+    color: indigo !important;
+    font-family: 'Pacifico', cursive;
+    font-size: 200%;
+}
+
+.navbar-brand{
+    font-family: 'Pacifico', cursive;
+}
+
+a {
+    color: indigo;
+    font-size: 100%;
+}
+
+a:hover{
+    color: grey;
+}
+
+h1:hover{
+    color: blue;
+}
+
+body{
+    background-color: gainsboro;
+    padding-top: 50px;
+    margin: 1% 5% 1% 5%;
+}
+
+p{
+    margin-top: 5%;
+}
+p.footer{
+    text-align: center;
+}
+
+
+div.linkedin{
+    text-align: center;
+}
+
+.navbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
