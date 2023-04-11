@@ -4,6 +4,8 @@ This example shows how frontend and backend are separated by implementing a star
 
 ### Before running the example
 
+new content
+
 #### If you do not have USER `mytestuser` setup in MySQL, follow the below steps to create it:
 
  - login to mysql as a root user 
