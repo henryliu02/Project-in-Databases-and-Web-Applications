@@ -1,10 +1,10 @@
 ## CS 122B Project 1 - Henry Liu
 
-Website URL: http://ec2-3-89-65-175.compute-1.amazonaws.com:8080/cs122b-project1/index.html
+Website URL: http://ec2-3-88-45-229.compute-1.amazonaws.com:8080/cs122b-project1/index.html
 
 Demo Video URL: https://www.youtube.com/watch?v=S_OqkwNK-DU&ab_channel=HenryLiu
 
-Please read me: There is an "about me" tab on the upper left corner but yet to be implemented!
+Please read me: There is an "about me" tab on upper left corner but yet to be implemented! Pls don't click it yet. 
 
 This project shows how frontend and backend are separated by implementing a star list page, and a single star page with movie list.
 
