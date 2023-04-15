@@ -1,7 +1,7 @@
 ## CS 122B Project 1 - Henry Liu
 
 Website URL: http://ec2-3-88-45-229.compute-1.amazonaws.com:8080/cs122b-project1/index.html
-new change
+
 
 Demo Video URL: https://www.youtube.com/watch?v=S_OqkwNK-DU&ab_channel=HenryLiu
 
