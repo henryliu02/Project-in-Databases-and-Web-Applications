@@ -63,6 +63,14 @@ public class MoviesServlet extends HttpServlet {
                     "ORDER BY rating DESC\n" +
                     "LIMIT 20;";
 
+//            String query = "select r.movieId, title, year, director, GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, GROUP_CONCAT(DISTINCT s.name order by s.name SEPARATOR ',') AS stars, GROUP_CONCAT(DISTINCT s.id order by s.name SEPARATOR ',') AS stars_id, round(avg(r.rating),2) AS rating\n" +
+//                    "from ratings as r join movies as m on r.movieId = m.id\n" +
+//                    "natural join stars_in_movies as sim join stars as s on sim.starId = s.id\n" +
+//                    "natural join genres_in_movies as gim join genres as g on gim.genreId = g.id\n" +
+//                    "group by r.movieId, title, year, director\n" +
+//                    "order by rating desc\n" +
+//                    "LIMIT 20;";
+
             // Perform the query
             ResultSet rs = statement.executeQuery(query);
             System.out.println("successfully connect and execute query");
