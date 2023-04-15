@@ -49,20 +49,33 @@ public class SingleMovieServlet extends HttpServlet{
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
-            String query = "SELECT r.movieId, m.title, m.year, m.director, \n" +
-                    "    GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, \n" +
-                    "    GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars, \n" +
-                    "    GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') AS stars_id, \n" +
-                    "    ROUND(AVG(r.rating),2) AS rating\n" +
-                    "FROM ratings AS r \n" +
-                    "JOIN movies AS m ON r.movieId = m.id\n" +
-                    "JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
-                    "JOIN stars AS s ON sim.starId = s.id\n" +
-                    "JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
-                    "JOIN genres AS g ON gim.genreId = g.id\n" +
+            String query = "SELECT r.movieId, m.title, m.year, m.director,\n" +
+                    "GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres,\n" +
+                    "GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars,\n" +
+                    "GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') AS stars_id,\n" +
+                    "ROUND(AVG(r.rating),2) AS rating\n" +
+                    "FROM ratings AS r\n" +
+                    "INNER JOIN movies AS m ON r.movieId = m.id\n" +
+                    "INNER JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
+                    "INNER JOIN stars AS s ON sim.starId = s.id\n" +
+                    "INNER JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
+                    "INNER JOIN genres AS g ON gim.genreId = g.id\n" +
                     "WHERE r.movieId = ?\n" +
-                    "GROUP BY r.movieId, m.title, m.year, m.director\n" +
-                    "ORDER BY rating DESC;";
+                    "GROUP BY r.movieId, m.title, m.year, m.director;";
+//                    "SELECT r.movieId, m.title, m.year, m.director, \n" +
+//                    "    GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, \n" +
+//                    "    GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars, \n" +
+//                    "    GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') AS stars_id, \n" +
+//                    "    ROUND(AVG(r.rating),2) AS rating\n" +
+//                    "FROM ratings AS r \n" +
+//                    "JOIN movies AS m ON r.movieId = m.id\n" +
+//                    "JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
+//                    "JOIN stars AS s ON sim.starId = s.id\n" +
+//                    "JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
+//                    "JOIN genres AS g ON gim.genreId = g.id\n" +
+//                    "WHERE r.movieId = ?\n" +
+//                    "GROUP BY r.movieId, m.title, m.year, m.director\n" +
+//                    "ORDER BY rating DESC;";
 
 //                    "select r.movieId, title, year, director, GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, GROUP_CONCAT(DISTINCT s.name order by s.name SEPARATOR ',') AS stars, GROUP_CONCAT(DISTINCT s.id order by s.name SEPARATOR ',') AS stars_id, round(avg(r.rating),2) AS rating\n" +
 //                    "from ratings as r join movies as m on r.movieId = m.id\n" +

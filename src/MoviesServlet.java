@@ -48,20 +48,26 @@ public class MoviesServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
-            String query = "SELECT r.movieId, m.title, m.year, m.director, \n" +
-                    "    GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, \n" +
-                    "    GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars, \n" +
-                    "    GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') AS stars_id, \n" +
-                    "    ROUND(AVG(r.rating),2) AS rating\n" +
-                    "FROM ratings AS r \n" +
-                    "JOIN movies AS m ON r.movieId = m.id\n" +
-                    "JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
-                    "JOIN stars AS s ON sim.starId = s.id\n" +
-                    "JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
-                    "JOIN genres AS g ON gim.genreId = g.id\n" +
-                    "GROUP BY r.movieId, m.title, m.year, m.director\n" +
-                    "ORDER BY rating DESC\n" +
-                    "LIMIT 20;";
+            String query = "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
+                    "       GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres,\n" +
+                    "       GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars,\n" +
+                    "       GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') AS stars_id,\n" +
+                    "       ROUND(avg(r.rating), 2) AS rating\n" +
+                    "FROM (\n" +
+                    "  SELECT movieId, AVG(rating) AS avg_rating\n" +
+                    "  FROM ratings\n" +
+                    "  GROUP BY movieId\n" +
+                    "  ORDER BY avg_rating DESC\n" +
+                    "  LIMIT 20\n" +
+                    ") AS top_movies\n" +
+                    "JOIN movies AS m ON m.id = top_movies.movieId\n" +
+                    "JOIN genres_in_movies AS gim ON gim.movieId = m.id\n" +
+                    "JOIN genres AS g ON g.id = gim.genreId\n" +
+                    "JOIN stars_in_movies AS sim ON sim.movieId = m.id\n" +
+                    "JOIN stars AS s ON s.id = sim.starId\n" +
+                    "JOIN ratings AS r ON r.movieId = m.id\n" +
+                    "GROUP BY m.id, m.title, m.year, m.director\n" +
+                    "ORDER BY rating DESC;";
 
 //            String query = "select r.movieId, title, year, director, GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, GROUP_CONCAT(DISTINCT s.name order by s.name SEPARATOR ',') AS stars, GROUP_CONCAT(DISTINCT s.id order by s.name SEPARATOR ',') AS stars_id, round(avg(r.rating),2) AS rating\n" +
 //                    "from ratings as r join movies as m on r.movieId = m.id\n" +
