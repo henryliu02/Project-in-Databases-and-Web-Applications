@@ -49,9 +49,9 @@ public class MoviesServlet extends HttpServlet {
             Statement statement = conn.createStatement();
 
             String query = "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
+                    "       GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres,\n" +
+                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ','), ',', 3) AS stars,\n" +
+                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ','), ',', 3) AS stars_id,\n" +
                     "       ROUND(avg(r.rating), 2) AS rating\n" +
                     "FROM (\n" +
                     "  SELECT movieId, AVG(rating) AS avg_rating\n" +
@@ -66,11 +66,6 @@ public class MoviesServlet extends HttpServlet {
                     "JOIN stars_in_movies AS sim ON sim.movieId = m.id\n" +
                     "JOIN stars AS s ON s.id = sim.starId\n" +
                     "JOIN ratings AS r ON r.movieId = m.id\n" +
-                    "INNER JOIN (\n" +
-                    "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
-                    "    FROM stars_in_movies AS sim\n" +
-                    "    GROUP BY sim.starId\n" +
-                    ") AS mdb ON s.id = mdb.starId\n" +
                     "GROUP BY m.id, m.title, m.year, m.director\n" +
                     "ORDER BY rating DESC;\n";
 
