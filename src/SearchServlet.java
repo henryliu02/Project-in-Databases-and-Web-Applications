@@ -4,6 +4,7 @@ import com.google.gson.JsonObject;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import jakarta.servlet.ServletConfig;
+import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -12,84 +13,95 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
-import java.sql.Statement;
 
+// Declaring a WebServlet called SearchServlet, which maps to url "/api/search"
+@WebServlet(name = "SearchServlet", urlPatterns = "/api/search")
+public class SearchServlet extends HttpServlet{
+//    private static final long serialVersionUID = 3L;
 
-// Declaring a WebServlet called MoviesServlet, which maps to url "/api/movies"
-@WebServlet(name = "MoviesServlet", urlPatterns = "/api/movies")
-public class MoviesServlet extends HttpServlet {
-    private static final long serialVersionUID = 1L;
-
-    // Create a dataSource which registered in web.
+    // create a database which is registered in web.xml
     private DataSource dataSource;
 
-    public void init(ServletConfig config) {
-        try {
+    public void init(ServletConfig config)  {
+        try{
             dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
-        } catch (NamingException e) {
+        }catch (NamingException e){
             e.printStackTrace();
         }
     }
 
-    /**
-     * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-     */
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+        response.setContentType("application/json"); //Response mime type
 
-        response.setContentType("application/json"); // Response mime type
+        // Retrieve parameter id from url request
+        String title = request.getParameter("title");
+        String year = request.getParameter("year");
+        String director = request.getParameter("director");
+        String star = request.getParameter("star");
+
+        // The log message can be found in localhost log
+        request.getServletContext().log("getting title: " + title);
+        request.getServletContext().log("getting year: " + year);
+        request.getServletContext().log("getting director: " + director);
+        request.getServletContext().log("getting star: " + star);
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
+            // Get a connection from dataSource
 
-            // Declare our statement
-            Statement statement = conn.createStatement();
-
-            String query = "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
+            // Construct a query with parameter represented by "?"
+            String query = "SELECT r.movieId, m.title, m.year, m.director,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
-                    "       ROUND(avg(r.rating), 2) AS rating\n" +
-                    "FROM (\n" +
-                    "  SELECT movieId, AVG(rating) AS avg_rating\n" +
-                    "  FROM ratings\n" +
-                    "  GROUP BY movieId\n" +
-                    "  ORDER BY avg_rating DESC\n" +
-                    "  LIMIT 20\n" +
-                    ") AS top_movies\n" +
-                    "JOIN movies AS m ON m.id = top_movies.movieId\n" +
-                    "JOIN genres_in_movies AS gim ON gim.movieId = m.id\n" +
-                    "JOIN genres AS g ON g.id = gim.genreId\n" +
-                    "JOIN stars_in_movies AS sim ON sim.movieId = m.id\n" +
-                    "JOIN stars AS s ON s.id = sim.starId\n" +
-                    "JOIN ratings AS r ON r.movieId = m.id\n" +
+                    "       ROUND(AVG(r.rating),2) AS rating\n" +
+                    "FROM ratings AS r\n" +
+                    "INNER JOIN movies AS m ON r.movieId = m.id\n" +
+                    "INNER JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
+                    "INNER JOIN stars AS s ON sim.starId = s.id\n" +
+                    "INNER JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
+                    "INNER JOIN genres AS g ON gim.genreId = g.id\n" +
                     "INNER JOIN (\n" +
                     "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
                     "    FROM stars_in_movies AS sim\n" +
                     "    GROUP BY sim.starId\n" +
                     ") AS mdb ON s.id = mdb.starId\n" +
-                    "GROUP BY m.id, m.title, m.year, m.director\n" +
-                    "ORDER BY rating DESC;\n";
+                    "WHERE (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n" +
+                    "  AND m.year = COALESCE(NULLIF(?, ''), m.year)\n" +
+                    "  AND (m.director LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.director), '%'))\n" +
+                    "  AND (? = '' OR EXISTS (\n" +
+                    "    SELECT 1\n" +
+                    "    FROM stars AS s2\n" +
+                    "    INNER JOIN stars_in_movies AS sim2 ON s2.id = sim2.starId\n" +
+                    "    WHERE s2.name LIKE CONCAT('%', COALESCE(NULLIF(?, ''), s2.name), '%') AND sim2.movieId = r.movieId\n" +
+                    "))\n" +
+                    "GROUP BY r.movieId, m.title, m.year, m.director\n" +
+                    "ORDER BY rating DESC;";
 
-//            String query = "select r.movieId, title, year, director, GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres, GROUP_CONCAT(DISTINCT s.name order by s.name SEPARATOR ',') AS stars, GROUP_CONCAT(DISTINCT s.id order by s.name SEPARATOR ',') AS stars_id, round(avg(r.rating),2) AS rating\n" +
-//                    "from ratings as r join movies as m on r.movieId = m.id\n" +
-//                    "natural join stars_in_movies as sim join stars as s on sim.starId = s.id\n" +
-//                    "natural join genres_in_movies as gim join genres as g on gim.genreId = g.id\n" +
-//                    "group by r.movieId, title, year, director\n" +
-//                    "order by rating desc\n" +
-//                    "LIMIT 20;";
+            // Declare our statement
+            PreparedStatement statement = conn.prepareStatement(query);
+
+            // Set the parameter represented by "?" in the query to the id we get from url,
+            // num 1 indicates the first "?" in the query
+            statement.setString(1,title);
+            statement.setString(2,year);
+            statement.setString(3,director);
+            statement.setString(4,star);
+            statement.setString(5,star);
 
             // Perform the query
-            ResultSet rs = statement.executeQuery(query);
-            System.out.println("successfully connect and execute query");
+            ResultSet rs = statement.executeQuery();
 
             JsonArray jsonArray = new JsonArray();
 
             // Iterate through each row of rs
             while (rs.next()) {
+                request.getServletContext().log("it has content");
                 String movie_title = rs.getString("title");
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
@@ -98,13 +110,6 @@ public class MoviesServlet extends HttpServlet {
                 String stars_id = rs.getString("stars_id");
                 String movie_rating = rs.getString("rating");
                 String movie_id = rs.getString("movieId");
-
-                System.out.println(movie_stars);
-                System.out.println(stars_id);
-
-//                String star_id = rs.getString("id");
-//                String star_name = rs.getString("name");
-//                String star_dob = rs.getString("birthYear");
 
                 // Create a JsonObject based on the data we retrieve from rs
                 JsonObject jsonObject = new JsonObject();
@@ -117,17 +122,10 @@ public class MoviesServlet extends HttpServlet {
                 jsonObject.addProperty("movie_rating", movie_rating);
                 jsonObject.addProperty("movie_id", movie_id);
 
-
-//                jsonObject.addProperty("star_name", star_name);
-//                jsonObject.addProperty("star_dob", star_dob);
-
                 jsonArray.add(jsonObject);
             }
             rs.close();
             statement.close();
-
-            // Log to localhost log
-            request.getServletContext().log("getting " + jsonArray.size() + " results");
 
             // Write JSON string to output
             out.write(jsonArray.toString());
@@ -135,21 +133,19 @@ public class MoviesServlet extends HttpServlet {
             response.setStatus(200);
 
         } catch (Exception e) {
-            System.out.println("error");
-            System.out.println(e);
-
             // Write error message JSON object to output
             JsonObject jsonObject = new JsonObject();
             jsonObject.addProperty("errorMessage", e.getMessage());
             out.write(jsonObject.toString());
 
+            // Log error to localhost log
+            request.getServletContext().log("Error:", e);
             // Set response status to 500 (Internal Server Error)
             response.setStatus(500);
         } finally {
             out.close();
         }
-
         // Always remember to close db connection after usage. Here it's done by try-with-resources
-
     }
 }
+
