@@ -95,15 +95,33 @@ function handleResult(resultData) {
  * Once this .js is loaded, following scripts will be executed by the browser\
  */
 
-// Try to get genreId and rowPerPage from session
-let genreId, rowPerPage;
+// Try to get genreId and rowPerPage, title from session
+let genreId = "", rowPerPage = "", title = "", sort = "";
 
 // Get genreId from URL parameter or sessionStorage
-if (getParameterByName('id')) {
+if (getParameterByName('id') && !getParameterByName('title')) {
     genreId = getParameterByName('id');
-    sessionStorage.setItem('genreId', genreId);
-} else if (sessionStorage.getItem('genreId')) {
+    if (sessionStorage.getItem('genreId') != genreId) {
+        sessionStorage.setItem('genreId', genreId);
+        sessionStorage.removeItem("title");
+        sessionStorage.removeItem("rowPerPage");
+        sessionStorage.setItem("current_page", 1);
+        sessionStorage.setItem("sort", 1);
+    }
+}
+else if (!getParameterByName('id') && getParameterByName('title')){
+    title = getParameterByName('title');
+    if (sessionStorage.getItem('title') != title) {
+        sessionStorage.setItem('title', title);
+        sessionStorage.removeItem("genreId");
+        sessionStorage.removeItem("rowPerPage");
+        sessionStorage.setItem("current_page", 1);
+        sessionStorage.setItem("sort", 1);
+    }
+}
+else{
     genreId = sessionStorage.getItem('genreId');
+    title = sessionStorage.getItem('title');
 }
 
 // Get rowPerPage from URL parameter or sessionStorage
@@ -117,16 +135,61 @@ if (getParameterByName('n')) {
     sessionStorage.setItem('rowPerPage', rowPerPage);
 }
 
+// get sort option from URL parameter or sessionStorage
+if (getParameterByName('sort')) {
+    sort = getParameterByName('sort');
+    sessionStorage.setItem('sort', sort);
+} else if (sessionStorage.getItem('sort')) {
+    sort = sessionStorage.getItem('sort');
+} else {
+    sort = 1; // Default to sort option 1 if not present in parameter or sessionStorage
+    sessionStorage.setItem('sort', sort);
+}
+
+// Add event listener to the "Previous" button
+document.getElementById("prev-button").addEventListener("click", function(e) {
+    e.preventDefault();
+    currentPage = sessionStorage.getItem('current_page');
+
+    // Update the current page number
+    currentPage = currentPage > 1 ? currentPage - 1 : 1;
+    sessionStorage.setItem('current_page', currentPage);
+
+
+    // Clear the current page content
+    document.getElementById("movie_table_body").innerHTML = "";
+    // Reload the page with the updated parameter
+    window.location.href = "genre.html?page=" + currentPage;
+});
+
+// Add event listener to the "Next" button
+document.getElementById("next-button").addEventListener("click", function(e) {
+    e.preventDefault();
+    currentPage = sessionStorage.getItem('current_page');
+
+    // Update the current page number
+    currentPage++;
+    sessionStorage.setItem('current_page', currentPage);
+
+    // Clear the current page content
+    document.getElementById("movie_table_body").innerHTML = "";
+    // Reload the page with the updated parameter
+    window.location.href = "genre.html?page=" + currentPage;
+});
+
 console.log("genre id: ", genreId);
+console.log("title: ", title);
 console.log("rows per page: ", rowPerPage);
+currentPage = sessionStorage.getItem("current_page");
 console.log("current page: ", currentPage);
+console.log("current sort option: ", sort)
 
 
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
     dataType: "json",  // Setting return data type
     method: "GET",// Setting request method
-    url: "api/genre?id=" + genreId +"&n=" + rowPerPage +"&page=" + currentPage,// Setting request url, which is mapped by StarsServlet in Stars.java
+    url: "api/genre?id=" + genreId +"&n=" + rowPerPage +"&page=" + currentPage +"&title=" + title + "&sort=" + sort,// Setting request url, which is mapped by StarsServlet in Stars.java
     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
 });
 

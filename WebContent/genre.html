@@ -54,13 +54,27 @@
 <div class="float-right">
     <form action="genre.html" method="get">
         <div class="dataTables_length" id="movie_table_length">
-            <label>
-                Show entries
-                <select name="n" id="movie_table_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
-                    <option value="10">10</option>
-                    <option value="25">25</option>
-                    <option value="50">50</option>
-                    <option value="100">100</option>
+            <label style="font-size: 14px;">
+<!--                Sort entries-->
+                <select style="width: 150px;" name="sort" id="movie_table_sort_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
+                    <option value="1">Title↑ Rating↑</option>
+                    <option value="2">Title↑ Rating↓</option>
+                    <option value="3">Title↓ Rating↑</option>
+                    <option value="4">Title↓ Rating↓</option>
+                    <option value="5">Rating↑ Title↑</option>
+                    <option value="6">Rating↑ Title↓</option>
+                    <option value="7">Rating↓ Title↑</option>
+                    <option value="8">Rating↓ Title↓</option>
+                </select>
+            </label>
+
+            <label style="font-size: 14px;">
+<!--                Show entries-->
+                <select style="width: 150px;" name="n" id="movie_table_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
+                    <option value="10">10 per page</option>
+                    <option value="25">25 per page</option>
+                    <option value="50">50 per page</option>
+                    <option value="100">100 per page</option>
                 </select>
             </label>
             <button type="submit" class="btn btn-primary btn-sm ml-2">Update</button>
@@ -104,49 +118,46 @@
 </div>
 
 
-<script>// Get the current page number from the URL parameter
-let urlParams = new URLSearchParams(window.location.search);
-let currentPage = urlParams.get('page') || 1;
-
-// Add event listener to the "Previous" button
-document.getElementById("prev-button").addEventListener("click", function(e) {
-    e.preventDefault();
-
-    // Update the current page number
-    currentPage = currentPage > 1 ? currentPage - 1 : 1;
-
-    // Clear the current page content
-    document.getElementById("movie_table_body").innerHTML = "";
-    // Reload the page with the updated parameter
-    window.location.href = "genre.html?page=" + currentPage;
-});
-
-// Add event listener to the "Next" button
-document.getElementById("next-button").addEventListener("click", function(e) {
-    e.preventDefault();
-
-    // Update the current page number
-    currentPage++;
-
-    // Clear the current page content
-    document.getElementById("movie_table_body").innerHTML = "";
-    // Reload the page with the updated parameter
-    window.location.href = "genre.html?page=" + currentPage;
-});
-document.getElementById('active-page').textContent = currentPage;
-</script>
-
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+<script>// Get the current page number from the URL parameter or from session or default to 1
+let urlParams = new URLSearchParams(window.location.search);
+let currentPage = urlParams.get('page') || sessionStorage.getItem('current_page') || 1;
+// Assigns again to sessionStorage
+sessionStorage.setItem('current_page', currentPage);
+</script>
+
 <script src="genre.js"></script>
+
 <script>
-    console.log("running this script");
+    // update the active page element with the current page, put it here so that it runs after genres.js to update the currentPage
+    document.getElementById('active-page').textContent = currentPage;
+    console.log("running inline js");
     document.addEventListener('DOMContentLoaded', function () {
         // Get the value of 'n' from sessionStorage
+
+        let sort = sessionStorage.getItem('sort');
+        console.log("got sort: ", sort);
+        if (sort) {
+            // Get the select element by its id
+            let movieTableSortSelect = document.getElementById('movie_table_sort_select');
+
+            // Loop through the options of the select element
+            for (let i = 0; i < movieTableSortSelect.options.length; i++) {
+                // If the option value matches the value of 'n', set the 'selected' attribute
+                if (movieTableSortSelect.options[i].value === sort) {
+                    movieTableSortSelect.options[i].selected = true;
+                    break;
+                }
+            }
+        }
+
         let n = sessionStorage.getItem('rowPerPage');
         console.log("got rowPerPage: ", n);
+
+
 
         if (n) {
             // Get the select element by its id
@@ -161,6 +172,7 @@ document.getElementById('active-page').textContent = currentPage;
                 }
             }
         }
+
     });
 </script>
 
