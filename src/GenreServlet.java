@@ -112,39 +112,42 @@ public class GenreServlet extends HttpServlet {
         try (Connection conn = dataSource.getConnection()) {
 
             // Construct a query with parameter represented by "?"
-            String query =  "SELECT DISTINCT m.id AS movieId, m.title, m.year, m.director,\n" +
+            String query =   "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
                     "       ROUND(AVG(r.rating),2) AS rating\n" +
                     "FROM (\n" +
                     "    SELECT id, title, year, director\n" +
-                    "    FROM movies m\n" +
-                    "    WHERE EXISTS (\n" +
-                    "        SELECT 1\n" +
-                    "        FROM genres_in_movies gim\n" +
-                    "        WHERE gim.genreId = ?\n" +
-                    "        AND gim.movieId = m.id\n" +
+                    "    FROM movies\n" +
+                    "    WHERE id IN (\n" +
+                    "        SELECT movieId\n" +
+                    "        FROM genres_in_movies\n" +
+                    "        WHERE genreId = ?\n" +
                     "    )\n" +
-                    "  LIMIT ?\n" +  // Include a parameter for the number of results per page
-                    "  OFFSET ?\n" + // Include a parameter for the offset based on the page number and number of results per page
+                    "    LIMIT ?\n" +
+                    "    OFFSET ?\n" +
                     ") m\n" +
                     "INNER JOIN ratings r ON r.movieId = m.id\n" +
                     "INNER JOIN genres_in_movies gim ON m.id = gim.movieId\n" +
                     "INNER JOIN genres g ON gim.genreId = g.id\n" +
-                    "LEFT JOIN (\n" +
-                    "    SELECT sim.movieId, s.name, s.id, COUNT(*) AS num_movies\n" +
-                    "    FROM stars_in_movies sim\n" +
-                    "    INNER JOIN stars s ON sim.starId = s.id\n" +
-                    "    GROUP BY sim.movieId, s.id\n" +
-                    ") s ON m.id = s.movieId\n" +
-                    "GROUP BY m.id, m.title, m.year, m.director;\n";
+                    "INNER JOIN stars_in_movies AS sim ON m.id = sim.movieId\n" +
+                    "INNER JOIN stars AS s ON sim.starId = s.id\n" +
+                    "INNER JOIN (\n" +
+                    "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
+                    "    FROM stars_in_movies AS sim\n" +
+                    "    GROUP BY sim.starId\n" +
+                    ") AS mdb ON s.id = mdb.starId\n" +
+                    "GROUP BY m.id, m.title, m.year, m.director;\n";;
 
-                    //query 2
+
+
+
+
 //                    "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
 //                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY s.num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY s.num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
+//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
+//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
 //                    "       ROUND(AVG(r.rating),2) AS rating\n" +
 //                    "FROM (\n" +
 //                    "    SELECT id, title, year, director\n" +
@@ -165,6 +168,35 @@ public class GenreServlet extends HttpServlet {
 //                    "    FROM stars_in_movies sim\n" +
 //                    "    JOIN stars s ON sim.starId = s.id\n" +
 //                    "    GROUP BY sim.movieId, s.id, s.name\n" +
+//                    ") s ON m.id = s.movieId\n" +
+//                    "GROUP BY m.id, m.title, m.year, m.director;\n";
+
+
+//                    "SELECT DISTINCT m.id AS movieId, m.title, m.year, m.director,\n" +
+//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
+//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
+//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
+//                    "       ROUND(AVG(r.rating),2) AS rating\n" +
+//                    "FROM (\n" +
+//                    "    SELECT id, title, year, director\n" +
+//                    "    FROM movies m\n" +
+//                    "    WHERE EXISTS (\n" +
+//                    "        SELECT 1\n" +
+//                    "        FROM genres_in_movies gim\n" +
+//                    "        WHERE gim.genreId = ?\n" +
+//                    "        AND gim.movieId = m.id\n" +
+//                    "    )\n" +
+//                    "  LIMIT ?\n" +  // Include a parameter for the number of results per page
+//                    "  OFFSET ?\n" + // Include a parameter for the offset based on the page number and number of results per page
+//                    ") m\n" +
+//                    "INNER JOIN ratings r ON r.movieId = m.id\n" +
+//                    "INNER JOIN genres_in_movies gim ON m.id = gim.movieId\n" +
+//                    "INNER JOIN genres g ON gim.genreId = g.id\n" +
+//                    "LEFT JOIN (\n" +
+//                    "    SELECT sim.movieId, s.name, s.id, COUNT(*) AS num_movies\n" +
+//                    "    FROM stars_in_movies sim\n" +
+//                    "    INNER JOIN stars s ON sim.starId = s.id\n" +
+//                    "    GROUP BY sim.movieId, s.id\n" +
 //                    ") s ON m.id = s.movieId\n" +
 //                    "GROUP BY m.id, m.title, m.year, m.director;\n";
 
