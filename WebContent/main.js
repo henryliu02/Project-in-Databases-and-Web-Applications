@@ -36,15 +36,17 @@ function handleMoviesResult(resultData) {
     const num = ['0','1','2','3','4','5','6','7','8','9','*'];
 
     for (let i = 0; i < alphabet.length; i++) {
+        var alpha = alphabet[i];
         if (i % 26 == 0 && i > 0) {
             titleList.append('<br>');
         }
-        titleList.append('<li style="display:inline-block;list-style-type:disc;margin-right:20px;">' + alphabet[i] + '</li>');
+        titleList.append('<li style="display:inline-block;list-style-type:disc;margin-right:20px;">' + '<a href="genre.html?title=' + alpha + '">' + alpha + '</a>' + '</li>');
     }
 
-    titleList.append('<br>')
+    titleList.append('<br>');
     for(let i = 0; i<num.length; i++){
-        titleList.append('<li style="display:inline-block;list-style-type:disc;margin-right:20px;">' + num[i] + '</li>');
+        var numm = num[i];
+        titleList.append('<li style="display:inline-block;list-style-type:disc;margin-right:20px;">' + '<a href="genre.html?title=' + numm  + '">' + numm + '</a>' + '</li>');
     }
 
 }
