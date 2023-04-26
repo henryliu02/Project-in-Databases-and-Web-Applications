@@ -15,6 +15,10 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import jakarta.servlet.http.HttpServlet;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
+import  jakarta.servlet.http.HttpSession;
 
 // Declaring a WebServlet called SearchServlet, which maps to url "/api/search"
 @WebServlet(name = "SearchServlet", urlPatterns = "/api/search")
@@ -35,17 +39,167 @@ public class SearchServlet extends HttpServlet{
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
         response.setContentType("application/json"); //Response mime type
 
+        // Get the session object
+        HttpSession session = request.getSession();
+
+        boolean new_search = false;
         // Retrieve parameter id from url request
         String title = request.getParameter("title");
         String year = request.getParameter("year");
         String director = request.getParameter("director");
         String star = request.getParameter("star");
+        System.out.println(title);
+        System.out.println(year);
+        System.out.println(director);
+        System.out.println(star);
+
+        Integer numResultsPerPage = 10;
+        Integer pageNum = 1;
+        String sortOption = "1";
+        Integer offset = 0;
+        String page = "1";
+        if(title != null && !"".equals(title))
+        {
+            System.out.println("get prev title attribute: " + session.getAttribute("title"));
+            if( title != session.getAttribute("title")) {
+                new_search = true;
+                session.setAttribute("title", title);
+            }
+        }
+        if(year != null && !"".equals(year))
+        {
+            System.out.println("get prev year attribute: " + session.getAttribute("year"));
+            if(!year.equals(session.getAttribute("year"))) {
+                new_search = true;
+                session.setAttribute("year", year);
+            }
+        }
+        if(director != null && !"".equals(director))
+        {
+            System.out.println("get prev director attribute: " + session.getAttribute("director"));
+            if(director != session.getAttribute("director")) {
+                new_search = true;
+                session.setAttribute("director", director);
+            }
+        }
+        if(star != null && !"".equals(star))
+        {
+            System.out.println("get prev star attribute: " + session.getAttribute("star"));
+            if(star != session.getAttribute("star")) {
+                new_search = true;
+                session.setAttribute("star", star);
+            }
+        }
+
+        if(new_search){
+            request.getServletContext().log("new search");
+            session.setAttribute("n", "10");
+            session.setAttribute("sort", "1");
+            session.setAttribute("page", "1");
+
+        }
+        else if (!new_search){
+            title = (String) session.getAttribute("title");
+            year = (String) session.getAttribute("year");
+            director = (String) session.getAttribute("director");
+            star = (String) session.getAttribute("star");
+
+            String numResultsPerPageStr = request.getParameter("n");
+
+            // If not present, try to retrieve from session
+            if (numResultsPerPageStr == null || numResultsPerPageStr.isEmpty()) {
+                numResultsPerPageStr = (String) session.getAttribute("n");
+                if (numResultsPerPageStr == null || numResultsPerPageStr.isEmpty()) {
+                    // Default to 10 if not present in session
+                    numResultsPerPageStr = "10";
+                    session.setAttribute("n", numResultsPerPageStr);
+                }
+            } else {
+                // Update session with new value from parameter
+                session.setAttribute("n", numResultsPerPageStr);
+            }
+            numResultsPerPage = Integer.parseInt(numResultsPerPageStr);
+
+            // Check if the page is already in the session
+            page = request.getParameter("page");
+            if (page != null) {
+                // The log message can be found in localhost log
+                request.getServletContext().log("getting page: " + page);
+                session.setAttribute("page", page);
+            } else {
+                page = (String) session.getAttribute("page");
+                if (page == null || page.isEmpty()) {
+                    // If the page is not in the parameter or session, default to 1 and store in session
+                    page = "1";
+                    session.setAttribute("page", page);
+                }
+            }
+
+            // Get pageNum and offset from page
+            pageNum = Integer.parseInt(page);
+            offset = (pageNum - 1) * numResultsPerPage;
+            session.setAttribute("offset", offset);
+
+            System.out.println("page: "+ session.getAttribute("page"));
+            System.out.println("offset: "+ session.getAttribute("offset"));
+
+            // configure the sort option for query
+            sortOption = request.getParameter("sort");
+            // If not present, try to retrieve from session
+            if (sortOption == null || "".equals(sortOption)) {
+                sortOption = (String) session.getAttribute("sort");
+                if (sortOption == null || "".equals(sortOption)) {
+                    // Default to option 1 if not present in session
+                    sortOption = "1";
+                    session.setAttribute("sort", "1");
+                }
+            } else {
+                // Update session with new value from parameter
+                session.setAttribute("sort", sortOption);
+            }
+        }
+
+
+        String sortQuery = "";
+        switch(sortOption) {
+            case "1":
+                sortQuery += "   ORDER BY title DESC, rating DESC\n";
+                break;
+            case "2":
+                sortQuery += "   ORDER BY title DESC, rating ASC\n";
+                break;
+            case "3":
+                sortQuery += "   ORDER BY title ASC, rating DESC\n";
+                break;
+            case "4":
+                sortQuery += "   ORDER BY title ASC, rating ASC\n";
+                break;
+            case "5":
+                sortQuery += "   ORDER BY rating DESC, title DESC\n";
+                break;
+            case "6":
+                sortQuery += "   ORDER BY rating DESC, title ASC\n";
+                break;
+            case "7":
+                sortQuery += "  ORDER BY rating ASC, title DESC\n";
+                break;
+            case "8":
+                sortQuery += "  ORDER BY rating ASC, title ASC\n";
+                break;
+        }
+
+
 
         // The log message can be found in localhost log
         request.getServletContext().log("getting title: " + title);
         request.getServletContext().log("getting year: " + year);
         request.getServletContext().log("getting director: " + director);
         request.getServletContext().log("getting star: " + star);
+        request.getServletContext().log("getting current page: " + page);
+        request.getServletContext().log("getting offset:" + offset);
+        request.getServletContext().log("getting num per page: " + numResultsPerPage);
+        request.getServletContext().log("getting sort option: " + sortOption);
+
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
@@ -81,7 +235,8 @@ public class SearchServlet extends HttpServlet{
                     "    WHERE s2.name LIKE CONCAT('%', COALESCE(NULLIF(?, ''), s2.name), '%') AND sim2.movieId = r.movieId\n" +
                     "))\n" +
                     "GROUP BY r.movieId, m.title, m.year, m.director\n" +
-                    "ORDER BY rating DESC;";
+                    "    LIMIT ?\n" +
+                    "    OFFSET ?\n";
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -93,6 +248,8 @@ public class SearchServlet extends HttpServlet{
             statement.setString(3,director);
             statement.setString(4,star);
             statement.setString(5,star);
+            statement.setInt(6, numResultsPerPage);
+            statement.setInt(7, offset);
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -101,7 +258,6 @@ public class SearchServlet extends HttpServlet{
 
             // Iterate through each row of rs
             while (rs.next()) {
-                request.getServletContext().log("it has content");
                 String movie_title = rs.getString("title");
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");

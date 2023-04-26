@@ -51,7 +51,6 @@ function handleMoviesResult(resultData) {
 
 }
 
-
 /**
  * Once this .js is loaded, following scripts will be executed by the browser
  */
