@@ -30,9 +30,10 @@
                 <a class="nav-link" href="top20.html">Top20</a>
             </li>
         </ul>
+        <!--  submit the form to genre.html where it will send ajax to servlet to retrieve data, and reload the page to there     -->
         <form class="form-inline my-2 my-lg-0" id="search_form" action="genre.html" method="get">
             <div class="input-group mr-2">
-                <input type="text" class="form-control" name="title" aria-label="Title Search" placeholder="Search by title">
+                <input type="text" class="form-control" name="title_" aria-label="Title Search" placeholder="Search by title">
             </div>
             <div class="input-group mr-2">
                 <input type="text" class="form-control" name="year" aria-label="Year Search" placeholder="Search by year">
@@ -64,6 +65,24 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 <script src="main.js"></script>
+<!--<script>-->
+<!--run this script if the action in the form left as #, use either one-->
+<!--    document.getElementById("search_form").addEventListener("submit", function(event) {-->
+<!--        event.preventDefault(); // Prevent the default form submission-->
+
+<!--        // Extract form data-->
+<!--        const title = encodeURIComponent(this.title.value.trim());-->
+<!--        const year = encodeURIComponent(this.year.value.trim());-->
+<!--        const director = encodeURIComponent(this.director.value.trim());-->
+<!--        const star = encodeURIComponent(this.star.value.trim());-->
+
+<!--        // Construct URL with parameters-->
+<!--        const url = `genre.html?title_=${title}&year=${year}&director=${director}&star=${star}`;-->
+
+<!--        // Redirect to the genre.html page with form data as URL parameters-->
+<!--        window.location.href = url;-->
+<!--    });-->
+<!--</script>-->
 
 </body>
 
