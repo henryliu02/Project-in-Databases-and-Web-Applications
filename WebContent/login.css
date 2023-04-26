@@ -1,0 +1,91 @@
+body {
+    font-family: 'Roboto', sans-serif;
+    /*background-color: #f1f1f1;*/
+}
+.page-wrap {
+    display: flex;
+    min-height: 100vh;
+}
+
+.left-panel {
+    flex: 1 1 66.666%;
+    /*background-image: linear-gradient(to bottom right, #CC2E5D, indigo);*/
+    background-image: url("movie.png");
+    background-color: #3A3B3C;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+.left-panel .illustration {
+    margin-bottom: 3vw;
+}
+
+.left-panel h3 {
+    color: #FFF;
+    font-size: 2vw;
+    font-weight: 600;
+    text-align: center;
+}
+
+.right-panel {
+    background-image: linear-gradient(to bottom right, #CC2E5D, indigo);
+    flex: 1 1 33.333%;
+    padding: 1.5vw;
+}
+
+.right-panel h1 {
+    color: indigo;
+    font-size: 4vw;
+    font-weight: 400;
+    margin-bottom: 3vw;
+}
+
+.right-panel h1 strong {
+    color: indigo;
+    font-weight: 900;
+}
+
+.login-box {
+    max-width: 400px;
+    margin: 100px auto;
+    padding: 30px;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    border-radius: 10px;
+}
+
+h3 {
+    text-align: center;
+    margin-bottom: 30px;
+    font-weight: 300;
+}
+
+.form-group label {
+    font-weight: 300;
+}
+
+input.form-control {
+    font-size: 14px;
+    border-radius: 5px;
+}
+
+button.btn {
+    width: 100%;
+    background-color: #1d1d1f;
+    border: none;
+    font-weight: 500;
+    font-size: 16px;
+    padding: 10px 0;
+    border-radius: 5px;
+}
+
+button.btn:hover {
+    background-color: #3a3a3c;
+}
+
+#login_error_message {
+    text-align: center;
+    color: #cc0000;
+}

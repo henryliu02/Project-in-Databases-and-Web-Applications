@@ -1,23 +1,3 @@
-$(document).ready(function () {
-    for (var i = 0; i < 25; i++) {
-        createMovingBackgroundElement();
-    }
-});
-
-function createMovingBackgroundElement() {
-    var span = document.createElement("span");
-    span.className = "moving-background";
-    span.style.width = Math.random() * 50 + "px";
-    span.style.height = span.style.width;
-    span.style.top = Math.random() * 100 + "%";
-    span.style.left = Math.random() * 100 + "%";
-    span.style.animationDuration = Math.random() * 10 + 5 + "s";
-    span.style.animationDelay = Math.random() * 5 + "s";
-    document.body.appendChild(span);
-}
-
-
-
 let login_form = $("#login_form");
 
 /**
