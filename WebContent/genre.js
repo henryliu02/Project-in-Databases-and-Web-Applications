@@ -1,26 +1,4 @@
-// $(document).ready(function() {
-//     // get the current URL
-//     var url = window.location.href;
-//
-//     // get the value of the "n" parameter from the URL, if it exists
-//     var nValue = getParameterByName("n");
-//
-//     // set the selected option to the value of the "n" parameter, if it exists
-//     // Get a reference to the select element
-//     const selectElement = document.querySelector('select[name="n"]');
-//
-//     // Set the selected option value based on the parameter
-//     selectElement.value = nValue;
-//
-//     // // update the URL with the selected option when the button is clicked
-//     // $("#movie_table_button").click(function() {
-//     //     var n = $("#movie_table_select").val();
-//     //     var newUrl = updateUrlParameter(url, "n", n);
-//     //     window.location.href = newUrl;
-//     // });
-// });
-
-
+// function to extract parameter name from url
 function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
@@ -96,8 +74,10 @@ function handleResult(resultData) {
  */
 
 // Try to get genreId and rowPerPage, title from session
+// check URL parameter for browsing
 let genreId = "", rowPerPage = "", title = "", sort = "";
 
+var call_1 = false;
 // Get genreId from URL parameter or sessionStorage
 if (getParameterByName('id') && !getParameterByName('title')) {
     genreId = getParameterByName('id');
@@ -108,6 +88,7 @@ if (getParameterByName('id') && !getParameterByName('title')) {
         sessionStorage.setItem("current_page", 1);
         sessionStorage.setItem("sort", 1);
     }
+    call_1 = true;
 }
 else if (!getParameterByName('id') && getParameterByName('title')){
     title = getParameterByName('title');
@@ -118,6 +99,7 @@ else if (!getParameterByName('id') && getParameterByName('title')){
         sessionStorage.setItem("current_page", 1);
         sessionStorage.setItem("sort", 1);
     }
+    call_1 = true;
 }
 else{
     genreId = sessionStorage.getItem('genreId');
@@ -177,40 +159,109 @@ document.getElementById("next-button").addEventListener("click", function(e) {
     window.location.href = "genre.html?page=" + currentPage;
 });
 
-console.log("genre id: ", genreId);
-console.log("title: ", title);
-console.log("rows per page: ", rowPerPage);
-currentPage = sessionStorage.getItem("current_page");
-console.log("current page: ", currentPage);
-console.log("current sort option: ", sort)
+
+// Makes the HTTP GET request and registers on success callback function handleResult
+// Function to call the first AJAX request
+function callFirstAjax() {
+    console.log("calling first ajax");
+    console.log("genre id: ", genreId);
+    console.log("title: ", title);
+    console.log("rows per page: ", rowPerPage);
+    currentPage = sessionStorage.getItem("current_page");
+    console.log("current page: ", currentPage);
+    console.log("current sort option: ", sort);
+    sessionStorage.setItem("lastAjaxCall", 1);
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/genre?id=" + genreId + "&n=" + rowPerPage + "&page=" + currentPage + "&title=" + title + "&sort=" + sort,// Setting request url, which is mapped by StarsServlet in Stars.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    });
+}
+
+/**
+ * Once this .js is loaded, following scripts will be executed by the browser\
+ */
+
+// check URL parameter for searching
+var call_2 = false;
+let movieTitle = getParameterByName('title_');
+let year = getParameterByName('year');
+let director = getParameterByName('director');
+let star = getParameterByName('star');
+if(movieTitle != null || year != null || director != null || star != null){
+    if( movieTitle != sessionStorage.getItem("title_") ||  year != sessionStorage.getItem("year")
+        || director != sessionStorage.getItem("director") || star != sessionStorage.getItem("star") )
+    {
+        console.log("new search performed")
+        sessionStorage.setItem("title_", movieTitle);
+        sessionStorage.setItem("year", year);
+        sessionStorage.setItem("director", director);
+        sessionStorage.setItem("star", star);
+        sessionStorage.removeItem("rowPerPage");
+        sessionStorage.setItem("sort", 1);
+        sessionStorage.setItem("current_page", 1);
+
+        rowPerPage = 10;
+        sort = 1;
+        currentPage = 1;
+    }
+    call_2 = true;
+}
+movieTitle = sessionStorage.getItem("title_");
+year = sessionStorage.getItem("year");
+director = sessionStorage.getItem("director");
+star = sessionStorage.getItem("star");
 
 
 // Makes the HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json",  // Setting return data type
-    method: "GET",// Setting request method
-    url: "api/genre?id=" + genreId +"&n=" + rowPerPage +"&page=" + currentPage +"&title=" + title + "&sort=" + sort,// Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
-});
+function callSecondAjax() {
+    console.log("calling second ajax");
+    console.log("movie Title: ", movieTitle);
+    console.log("Year: ", year);
+    console.log("Director: ", director);
+    console.log("Star: ", star);
+    sessionStorage.setItem("lastAjaxCall", 2);
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/search?title=" + movieTitle + "&year=" + year + "&director=" + director + "&star=" + star + "&n=" + rowPerPage + "&page=" + currentPage + "&sort=" + sort,// Setting request url, which is mapped by StarsServlet in Stars.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    });
+}
 
-// jQuery.ajax({
-//     dataType: "json",  // Setting return data type
-//     method: "GET",// Setting request method
-//     url: "api/genre?n=" + rowPerPage,// Setting request url, which is mapped by StarsServlet in Stars.java
-//     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
-// });
-//
-// // Set the text of the active page link to the "page" value
-// jQuery.ajax({
-//     dataType: "json",  // Setting return data type
-//     method: "GET",// Setting request method
-//     url: "api/genre?page=" + currentPage,// Setting request url, which is mapped by StarsServlet in Stars.java
-//     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
-// });
+// Variable to store the last AJAX call made
+let lastAjaxCall = sessionStorage.getItem("lastAjaxCall");
+if (lastAjaxCall == null)
+{
+    if(genreId != null || title != null)
+    {
+        lastAjaxCall = 1;
+        sessionStorage.setItem("lastAjaxCall", 1);
+    }
+    else if ( movieTitle != null || director != null || year != null || star != null){
+        lastAjaxCall = 2;
+        sessionStorage.setItem("lastAjaxCall", 2);
+    }
+}
 
-
-
-
-
-
+if (call_1){
+    console.log("new browse page");
+    callFirstAjax();
+}
+else if (call_2){
+    console.log("new search page");
+    callSecondAjax();
+}
+else{
+    if (lastAjaxCall == 1)
+    {
+        console.log("same browse page");
+        callFirstAjax();
+    }
+    else{
+        console.log("same search page");
+        callSecondAjax();
+    }
+}
 
