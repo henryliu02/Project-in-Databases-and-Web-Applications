@@ -221,6 +221,8 @@ function callSecondAjax() {
     console.log("Year: ", year);
     console.log("Director: ", director);
     console.log("Star: ", star);
+    console.log("current page: ", currentPage);
+    console.log("rows per page: ", rowPerPage);
     sessionStorage.setItem("lastAjaxCall", 2);
     jQuery.ajax({
         dataType: "json",  // Setting return data type
