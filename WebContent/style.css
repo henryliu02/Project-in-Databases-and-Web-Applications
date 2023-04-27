@@ -9,6 +9,14 @@ h1 {
     font-family: 'Pacifico', cursive;
 }
 
+.hover-effect-button {
+    transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+.hover-effect-button:hover {
+    background-color: darkslateblue; /* Change the background color on hover */
+}
+
 a {
     color: indigo;
     font-size: 100%;

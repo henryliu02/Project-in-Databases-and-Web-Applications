@@ -304,6 +304,17 @@ public class SearchServlet extends HttpServlet{
         request.getServletContext().log("getting sort option: " + sortOption);
 
 
+
+        // check if should find all title starts with non alphanumeric characters
+        String title_match_query = " (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n";
+        Boolean special_title = false;
+        if ("*".equals(title))
+        {
+            System.out.println("special character");
+            title_match_query =  " m.title NOT REGEXP '^[0-9a-zA-Z]'\n";
+            special_title = true;
+        }
+
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
 
@@ -314,6 +325,7 @@ public class SearchServlet extends HttpServlet{
             // Construct a query with parameter represented by "?"
             String query = "SELECT r.movieId, m.title, m.year, m.director,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
+                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres_id,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
                     "       ROUND(AVG(r.rating),2) AS rating\n" +
@@ -328,7 +340,8 @@ public class SearchServlet extends HttpServlet{
                     "    FROM stars_in_movies AS sim\n" +
                     "    GROUP BY sim.starId\n" +
                     ") AS mdb ON s.id = mdb.starId\n" +
-                    "WHERE (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n" +
+                    "WHERE" +
+                        title_match_query +
                     "  AND m.year = COALESCE(NULLIF(?, ''), m.year)\n" +
                     "  AND (m.director LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.director), '%'))\n" +
                     "  AND (? = '' OR EXISTS (\n" +
@@ -349,13 +362,23 @@ public class SearchServlet extends HttpServlet{
 
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
-            statement.setString(1,title);
-            statement.setString(2,year);
-            statement.setString(3,director);
-            statement.setString(4,star);
-            statement.setString(5,star);
-            statement.setInt(6, numResultsPerPage);
-            statement.setInt(7, offset);
+            if(!special_title) {
+                statement.setString(1, title);
+                statement.setString(2, year);
+                statement.setString(3, director);
+                statement.setString(4, star);
+                statement.setString(5, star);
+                statement.setInt(6, numResultsPerPage);
+                statement.setInt(7, offset);
+            }
+            else {
+                statement.setString(1, year);
+                statement.setString(2, director);
+                statement.setString(3, star);
+                statement.setString(4, star);
+                statement.setInt(5, numResultsPerPage);
+                statement.setInt(6, offset);
+            }
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -368,6 +391,7 @@ public class SearchServlet extends HttpServlet{
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
                 String movie_genres = rs.getString("genres");
+                String genres_id = rs.getString("genres_id");
                 String movie_stars = rs.getString("stars");
                 String stars_id = rs.getString("stars_id");
                 String movie_rating = rs.getString("rating");
@@ -379,6 +403,7 @@ public class SearchServlet extends HttpServlet{
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
                 jsonObject.addProperty("movie_genres", movie_genres);
+                jsonObject.addProperty("genres_id", genres_id);
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("stars_id", stars_id);
                 jsonObject.addProperty("movie_rating", movie_rating);

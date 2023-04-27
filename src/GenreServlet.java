@@ -89,9 +89,14 @@ public class GenreServlet extends HttpServlet {
         System.out.println("sort option: "+ session.getAttribute("sort"));
 
         // check if should find all title starts with non alphanumeric characters
+        String title_match_query = "               AND title LIKE CONCAT(COALESCE(NULLIF(?, ''), title), '%'))\n";
+        Boolean special_title = false;
         if ("*".equals(title))
         {
-            title = "[^a-zA-Z0-9]_";
+
+            System.out.println("special character");
+            title_match_query =  "    AND title NOT REGEXP '^[0-9a-zA-Z]')\n";
+            special_title = true;
         }
 
 
@@ -194,6 +199,7 @@ public class GenreServlet extends HttpServlet {
             String query =
                     "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
+                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres_id,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
                     "       ROUND(AVG(m.rating),2) AS rating\n" +
@@ -205,7 +211,7 @@ public class GenreServlet extends HttpServlet {
                     "        FROM genres_in_movies\n" +
                     "        WHERE genreId = COALESCE(NULLIF(?, ''), genreId)\n" +
                     "    )\n" +
-                    "               AND title LIKE CONCAT(COALESCE(NULLIF(?, ''), title), '%'))\n" +
+                                title_match_query +
                     "    GROUP BY id, title, year, director\n" +
                          sortQuery +
                     "    LIMIT ?\n" +
@@ -261,9 +267,17 @@ public class GenreServlet extends HttpServlet {
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             statement.setString(1, genreId);
-            statement.setString(2, title);
-            statement.setInt(3, numResultsPerPage);
-            statement.setInt(4, offset);
+            if (!special_title){
+                statement.setString(2, title);
+                statement.setInt(3, numResultsPerPage);
+                statement.setInt(4, offset);
+            }
+            else{
+                statement.setInt(2, numResultsPerPage);
+                statement.setInt(3, offset);
+            }
+
+
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -276,6 +290,7 @@ public class GenreServlet extends HttpServlet {
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
                 String movie_genres = rs.getString("genres");
+                String genres_id = rs.getString("genres_id");
                 String movie_stars = rs.getString("stars");
                 String stars_id = rs.getString("stars_id");
                 String movie_rating = rs.getString("rating");
@@ -294,6 +309,7 @@ public class GenreServlet extends HttpServlet {
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
                 jsonObject.addProperty("movie_genres", movie_genres);
+                jsonObject.addProperty("genres_id", genres_id);
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("stars_id", stars_id);
                 jsonObject.addProperty("movie_rating", movie_rating);
