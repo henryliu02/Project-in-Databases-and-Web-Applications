@@ -37,34 +37,69 @@ function handleResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
-    // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < resultData.length; i++) {
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<td>" +
-            '<a href="single-movie.html?id=' + resultData[i]["movie_id"] + '">' + resultData[i]["movie_title"] +'</a>' + '</td>';
-        rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_genres"] + "</td>";
+        let row = document.createElement("tr");
+        row.innerHTML = `
+        <td><a href="single-movie.html?id=${resultData[i]["movie_id"]}">${resultData[i]["movie_title"]}</a></td>
+        <td>${resultData[i]["movie_year"]}</td>
+        <td>${resultData[i]["movie_director"]}</td>
+    `;
+
+        let genresHTML = "";
+        let genres_id = resultData[i]["genres_id"].split(",");
+        let genres = resultData[i]["movie_genres"].split(",");
+        for(let j = 0; j < genres_id.length; j++){
+            genresHTML += '<a href="genre.html?id=' + genres_id[j] + '">' + genres[j] + '</a>';
+            if (j < genres_id.length - 1) {
+                genresHTML += ", ";
+            }
+        }
+        let genresCell = document.createElement("td");
+        genresCell.innerHTML = genresHTML;
+        row.appendChild(genresCell);
 
         let starsHTML = "";
         let stars = resultData[i]["movie_stars"].split(",");
         let stars_id = resultData[i]["stars_id"].split(",");
-
         for (let j = 0; j < stars_id.length; j++) {
-            // console.log("star id for parsing into url: ", stars_id[j])
             starsHTML += '<a href="single-star.html?id=' + stars_id[j] + '">' + stars[j] + '</a>';
             if (j < stars_id.length - 1) {
                 starsHTML += ", ";
             }
         }
+        let starsCell = document.createElement("td");
+        starsCell.innerHTML = starsHTML;
+        row.appendChild(starsCell);
 
-        rowHTML += "<td>" + starsHTML + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_rating"] + "&nbsp;&star;" + "</td>";
-        rowHTML += "</tr>";
+        let ratingCell = document.createElement("td");
+        ratingCell.innerHTML = resultData[i]["movie_rating"] + "&nbsp;&star;";
+        row.appendChild(ratingCell);
 
-        // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        var button = document.createElement("button");
+        button.className = "hover-effect-button"; // Add a class name to the button
+        button.textContent = "Add Cart";
+        // button.style.backgroundColor = "indigo";
+        button.style.background = "linear-gradient(to bottom right, #CC2E5D, indigo)";
+        button.style.color = "white";
+        button.style.border = "none";
+        button.style.padding = "10px 20px";
+        button.style.borderRadius = "5px";
+        button.style.fontFamily = "Helvetica Neue, Helvetica, Arial, sans-serif";
+        button.style.fontSize = "10px";
+        button.style.fontWeight = "bold";
+
+        button.addEventListener("click", function() {
+            console.log("button clicked");
+            var movie_id = resultData[i]["movie_id"];
+            window.location.href = "shopping_cart.html?id=" + movie_id;
+            // window.location.href = "single-movie.html?id=" + movie_id;
+        });
+
+        var buttonCell = document.createElement("td");
+        buttonCell.appendChild(button);
+        row.appendChild(buttonCell);
+
+        movieTableBodyElement.append(row);
     }
 }
 
