@@ -1,4 +1,4 @@
-function displayMovie(movie_id, title, quantity) {
+function displayMovie(movie_id, title, quantity, price, totalAmount) {
     var movieHtml = `
         <tr>
             <td>${movie_id}</td>
@@ -8,8 +8,8 @@ function displayMovie(movie_id, title, quantity) {
                 <span>${quantity}</span>
                 <button class="increase-quantity">+</button>
             </td>
-            <td><a>$6.0</a></td>
-            <td><a>$6.0</a></td>
+            <td><a>${price}</a></td>
+            <td><a>${price * quantity}</a></td>
             <td>
                 <button class="delete">Delete</button>
             </td>
@@ -28,6 +28,14 @@ function displayMovie(movie_id, title, quantity) {
 
     $movieRow.find(".delete").on("click", function() {
         deleteItem(movie_id);
+    });
+
+    // Update the total amount field
+    $("#total-amount").text(totalAmount.toFixed(2));
+
+    $("#checkout-button").on("click", function() {
+        const totalAmount = $("#total-amount").text();
+        window.location.href = "checkout.html?total_amount=" + totalAmount;
     });
 }
 
@@ -75,11 +83,14 @@ $.ajax({
     },
     dataType: "json",
     success: function(movieCart) {
+        var total_amount = 0;
+        var price = 6.0;
         for (const movie_id in movieCart) {
             const movieItem = movieCart[movie_id];
             const title = movieItem.title;
             const quantity = movieItem.quantity;
-            displayMovie(movie_id, title, quantity);
+            total_amount += price * quantity;
+            displayMovie(movie_id, title, quantity, price, total_amount);
         }
     },
     error: function(error) {
