@@ -1,26 +1,4 @@
-// $(document).ready(function() {
-//     // get the current URL
-//     var url = window.location.href;
-//
-//     // get the value of the "n" parameter from the URL, if it exists
-//     var nValue = getParameterByName("n");
-//
-//     // set the selected option to the value of the "n" parameter, if it exists
-//     // Get a reference to the select element
-//     const selectElement = document.querySelector('select[name="n"]');
-//
-//     // Set the selected option value based on the parameter
-//     selectElement.value = nValue;
-//
-//     // // update the URL with the selected option when the button is clicked
-//     // $("#movie_table_button").click(function() {
-//     //     var n = $("#movie_table_select").val();
-//     //     var newUrl = updateUrlParameter(url, "n", n);
-//     //     window.location.href = newUrl;
-//     // });
-// });
-
-
+// function to extract parameter name from url
 function getParameterByName(target) {
     // Get request URL
     let url = window.location.href;
@@ -59,34 +37,69 @@ function handleResult(resultData) {
     // Find the empty table body by id "movie_table_body"
     let movieTableBodyElement = jQuery("#movie_table_body");
 
-    // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < resultData.length; i++) {
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<td>" +
-            '<a href="single-movie.html?id=' + resultData[i]["movie_id"] + '">' + resultData[i]["movie_title"] +'</a>' + '</td>';
-        rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_genres"] + "</td>";
+        let row = document.createElement("tr");
+        row.innerHTML = `
+        <td><a href="single-movie.html?id=${resultData[i]["movie_id"]}">${resultData[i]["movie_title"]}</a></td>
+        <td>${resultData[i]["movie_year"]}</td>
+        <td>${resultData[i]["movie_director"]}</td>
+    `;
+
+        let genresHTML = "";
+        let genres_id = resultData[i]["genres_id"].split(",");
+        let genres = resultData[i]["movie_genres"].split(",");
+        for(let j = 0; j < genres_id.length; j++){
+            genresHTML += '<a href="genre.html?id=' + genres_id[j] + '">' + genres[j] + '</a>';
+            if (j < genres_id.length - 1) {
+                genresHTML += ", ";
+            }
+        }
+        let genresCell = document.createElement("td");
+        genresCell.innerHTML = genresHTML;
+        row.appendChild(genresCell);
 
         let starsHTML = "";
         let stars = resultData[i]["movie_stars"].split(",");
         let stars_id = resultData[i]["stars_id"].split(",");
-
         for (let j = 0; j < stars_id.length; j++) {
-            // console.log("star id for parsing into url: ", stars_id[j])
             starsHTML += '<a href="single-star.html?id=' + stars_id[j] + '">' + stars[j] + '</a>';
             if (j < stars_id.length - 1) {
                 starsHTML += ", ";
             }
         }
+        let starsCell = document.createElement("td");
+        starsCell.innerHTML = starsHTML;
+        row.appendChild(starsCell);
 
-        rowHTML += "<td>" + starsHTML + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_rating"] + "&nbsp;&star;" + "</td>";
-        rowHTML += "</tr>";
+        let ratingCell = document.createElement("td");
+        ratingCell.innerHTML = resultData[i]["movie_rating"] + "&nbsp;&star;";
+        row.appendChild(ratingCell);
 
-        // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        var button = document.createElement("button");
+        button.className = "hover-effect-button"; // Add a class name to the button
+        button.textContent = "Add Cart";
+        // button.style.backgroundColor = "indigo";
+        button.style.background = "linear-gradient(to bottom right, #CC2E5D, indigo)";
+        button.style.color = "white";
+        button.style.border = "none";
+        button.style.padding = "10px 20px";
+        button.style.borderRadius = "5px";
+        button.style.fontFamily = "Helvetica Neue, Helvetica, Arial, sans-serif";
+        button.style.fontSize = "10px";
+        button.style.fontWeight = "bold";
+
+        button.addEventListener("click", function() {
+            console.log("button clicked");
+            var movie_id = resultData[i]["movie_id"];
+            window.location.href = "shopping_cart.html?id=" + movie_id;
+            // window.location.href = "single-movie.html?id=" + movie_id;
+        });
+
+        var buttonCell = document.createElement("td");
+        buttonCell.appendChild(button);
+        row.appendChild(buttonCell);
+
+        movieTableBodyElement.append(row);
     }
 }
 
@@ -95,15 +108,37 @@ function handleResult(resultData) {
  * Once this .js is loaded, following scripts will be executed by the browser\
  */
 
-// Try to get genreId and rowPerPage from session
-let genreId, rowPerPage;
+// Try to get genreId and rowPerPage, title from session
+// check URL parameter for browsing
+let genreId = "", rowPerPage = "", title = "", sort = "";
 
+var call_1 = false;
 // Get genreId from URL parameter or sessionStorage
-if (getParameterByName('id')) {
+if (getParameterByName('id') && !getParameterByName('title')) {
     genreId = getParameterByName('id');
-    sessionStorage.setItem('genreId', genreId);
-} else if (sessionStorage.getItem('genreId')) {
+    if (sessionStorage.getItem('genreId') != genreId) {
+        sessionStorage.setItem('genreId', genreId);
+        sessionStorage.removeItem("title");
+        sessionStorage.removeItem("rowPerPage");
+        sessionStorage.setItem("current_page", 1);
+        sessionStorage.setItem("sort", 1);
+    }
+    call_1 = true;
+}
+else if (!getParameterByName('id') && getParameterByName('title')){
+    title = getParameterByName('title');
+    if (sessionStorage.getItem('title') != title) {
+        sessionStorage.setItem('title', title);
+        sessionStorage.removeItem("genreId");
+        sessionStorage.removeItem("rowPerPage");
+        sessionStorage.setItem("current_page", 1);
+        sessionStorage.setItem("sort", 1);
+    }
+    call_1 = true;
+}
+else{
     genreId = sessionStorage.getItem('genreId');
+    title = sessionStorage.getItem('title');
 }
 
 // Get rowPerPage from URL parameter or sessionStorage
@@ -117,37 +152,153 @@ if (getParameterByName('n')) {
     sessionStorage.setItem('rowPerPage', rowPerPage);
 }
 
-console.log("genre id: ", genreId);
-console.log("rows per page: ", rowPerPage);
-console.log("current page: ", currentPage);
+// get sort option from URL parameter or sessionStorage
+if (getParameterByName('sort')) {
+    sort = getParameterByName('sort');
+    sessionStorage.setItem('sort', sort);
+} else if (sessionStorage.getItem('sort')) {
+    sort = sessionStorage.getItem('sort');
+} else {
+    sort = 1; // Default to sort option 1 if not present in parameter or sessionStorage
+    sessionStorage.setItem('sort', sort);
+}
+
+// Add event listener to the "Previous" button
+document.getElementById("prev-button").addEventListener("click", function(e) {
+    e.preventDefault();
+    currentPage = sessionStorage.getItem('current_page');
+
+    // Update the current page number
+    currentPage = currentPage > 1 ? currentPage - 1 : 1;
+    sessionStorage.setItem('current_page', currentPage);
+
+
+    // Clear the current page content
+    document.getElementById("movie_table_body").innerHTML = "";
+    // Reload the page with the updated parameter
+    window.location.href = "genre.html?page=" + currentPage;
+});
+
+// Add event listener to the "Next" button
+document.getElementById("next-button").addEventListener("click", function(e) {
+    e.preventDefault();
+    currentPage = sessionStorage.getItem('current_page');
+
+    // Update the current page number
+    currentPage++;
+    sessionStorage.setItem('current_page', currentPage);
+
+    // Clear the current page content
+    document.getElementById("movie_table_body").innerHTML = "";
+    // Reload the page with the updated parameter
+    window.location.href = "genre.html?page=" + currentPage;
+});
 
 
 // Makes the HTTP GET request and registers on success callback function handleResult
-jQuery.ajax({
-    dataType: "json",  // Setting return data type
-    method: "GET",// Setting request method
-    url: "api/genre?id=" + genreId +"&n=" + rowPerPage +"&page=" + currentPage,// Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
-});
+// Function to call the first AJAX request
+function callFirstAjax() {
+    console.log("calling first ajax");
+    console.log("genre id: ", genreId);
+    console.log("title: ", title);
+    console.log("rows per page: ", rowPerPage);
+    currentPage = sessionStorage.getItem("current_page");
+    console.log("current page: ", currentPage);
+    console.log("current sort option: ", sort);
+    sessionStorage.setItem("lastAjaxCall", 1);
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/genre?id=" + genreId + "&n=" + rowPerPage + "&page=" + currentPage + "&title=" + title + "&sort=" + sort,// Setting request url, which is mapped by StarsServlet in Stars.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    });
+}
 
-// jQuery.ajax({
-//     dataType: "json",  // Setting return data type
-//     method: "GET",// Setting request method
-//     url: "api/genre?n=" + rowPerPage,// Setting request url, which is mapped by StarsServlet in Stars.java
-//     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
-// });
-//
-// // Set the text of the active page link to the "page" value
-// jQuery.ajax({
-//     dataType: "json",  // Setting return data type
-//     method: "GET",// Setting request method
-//     url: "api/genre?page=" + currentPage,// Setting request url, which is mapped by StarsServlet in Stars.java
-//     success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
-// });
+/**
+ * Once this .js is loaded, following scripts will be executed by the browser\
+ */
+
+// check URL parameter for searching
+var call_2 = false;
+let movieTitle = getParameterByName('title_');
+let year = getParameterByName('year');
+let director = getParameterByName('director');
+let star = getParameterByName('star');
+if(movieTitle != null || year != null || director != null || star != null){
+    if( movieTitle != sessionStorage.getItem("title_") ||  year != sessionStorage.getItem("year")
+        || director != sessionStorage.getItem("director") || star != sessionStorage.getItem("star") )
+    {
+        console.log("new search performed")
+        sessionStorage.setItem("title_", movieTitle);
+        sessionStorage.setItem("year", year);
+        sessionStorage.setItem("director", director);
+        sessionStorage.setItem("star", star);
+        sessionStorage.removeItem("rowPerPage");
+        sessionStorage.setItem("sort", 1);
+        sessionStorage.setItem("current_page", 1);
+
+        rowPerPage = 10;
+        sort = 1;
+        currentPage = 1;
+    }
+    call_2 = true;
+}
+movieTitle = sessionStorage.getItem("title_");
+year = sessionStorage.getItem("year");
+director = sessionStorage.getItem("director");
+star = sessionStorage.getItem("star");
 
 
+// Makes the HTTP GET request and registers on success callback function handleResult
+function callSecondAjax() {
+    console.log("calling second ajax");
+    console.log("movie Title: ", movieTitle);
+    console.log("Year: ", year);
+    console.log("Director: ", director);
+    console.log("Star: ", star);
+    console.log("current page: ", currentPage);
+    console.log("rows per page: ", rowPerPage);
+    sessionStorage.setItem("lastAjaxCall", 2);
+    jQuery.ajax({
+        dataType: "json",  // Setting return data type
+        method: "GET",// Setting request method
+        url: "api/search?title=" + movieTitle + "&year=" + year + "&director=" + director + "&star=" + star + "&n=" + rowPerPage + "&page=" + currentPage + "&sort=" + sort,// Setting request url, which is mapped by StarsServlet in Stars.java
+        success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    });
+}
 
+// Variable to store the last AJAX call made
+let lastAjaxCall = sessionStorage.getItem("lastAjaxCall");
+if (lastAjaxCall == null)
+{
+    if(genreId != null || title != null)
+    {
+        lastAjaxCall = 1;
+        sessionStorage.setItem("lastAjaxCall", 1);
+    }
+    else if ( movieTitle != null || director != null || year != null || star != null){
+        lastAjaxCall = 2;
+        sessionStorage.setItem("lastAjaxCall", 2);
+    }
+}
 
-
-
+if (call_1){
+    console.log("new browse page");
+    callFirstAjax();
+}
+else if (call_2){
+    console.log("new search page");
+    callSecondAjax();
+}
+else{
+    if (lastAjaxCall == 1)
+    {
+        console.log("same browse page");
+        callFirstAjax();
+    }
+    else{
+        console.log("same search page");
+        callSecondAjax();
+    }
+}
 

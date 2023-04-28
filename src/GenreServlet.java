@@ -47,21 +47,58 @@ public class GenreServlet extends HttpServlet {
         // Get the session object
         HttpSession session = request.getSession();
 
-        // Get the genreId from the request parameter or session
-        String genreId = request.getParameter("id");
-        if (genreId == null || genreId.isEmpty()) {
-            genreId = (String) session.getAttribute("genreId");
+
+//         Get the genreId from the request parameter or session
+        var genreId = request.getParameter("id");
+//         Get the genreId from the request parameter or session
+        var title = request.getParameter("title");
+
+
+//        System.out.println("id: "+ genreId);
+//        System.out.println("title: "+title);
+//        System.out.println(genreId == null || "".equals(genreId));
+//        System.out.println(title == null || "".equals(title));
+
+        if ("".equals(genreId) && (!"".equals(title))) {
+            if (session.getAttribute("title") != title) {
+                session.setAttribute("title", title);
+                // Remove the attribute from the session
+                session.removeAttribute("genreId");
+                session.removeAttribute("n");
+                session.removeAttribute("sort");
+
+            }
+        }
+        else if (!"".equals(genreId) && ("".equals(title))){
+            if (session.getAttribute("genreId") != genreId) {
+                session.setAttribute("genreId", genreId);
+                // Remove the attribute from the session
+                session.removeAttribute("title");
+                session.removeAttribute("n");
+                session.removeAttribute("sort");
+            }
         }
         else{
-            session.setAttribute("genreId", genreId);
+            genreId = (String) session.getAttribute("genreId");
+            title = (String) session.getAttribute("title");
         }
 
-//        // Retrieve parameter id from url request.
-//        String id = request.getParameter("id");
+        System.out.println("id: "+ genreId);
+        System.out.println("title: "+title);
+        System.out.println("n: "+ session.getAttribute("n"));
+        System.out.println("sort option: "+ session.getAttribute("sort"));
 
+        // check if should find all title starts with non alphanumeric characters
+        String title_match_query = "               AND title LIKE CONCAT(COALESCE(NULLIF(?, ''), title), '%'))\n";
+        Boolean special_title = false;
+        if ("*".equals(title))
+        {
 
-//        // The log message can be found in localhost log
-//        request.getServletContext().log("getting id: " + id);
+            System.out.println("special character");
+            title_match_query =  "    AND title NOT REGEXP '^[0-9a-zA-Z]')\n";
+            special_title = true;
+        }
+
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
@@ -108,27 +145,78 @@ public class GenreServlet extends HttpServlet {
         session.setAttribute("offset", offset);
         offset = (int) session.getAttribute("offset");
 
+        System.out.println("page: "+ session.getAttribute("page"));
+        System.out.println("offset: "+ session.getAttribute("offset"));
+
+        // configure the sort option for query
+        String sortOption = request.getParameter("sort");
+        // If not present, try to retrieve from session
+        if (sortOption == null || "".equals(sortOption)) {
+            sortOption = (String) session.getAttribute("sort");
+            if (sortOption == null || "".equals(sortOption)) {
+                // Default to option 1 if not present in session
+                sortOption = "1";
+                session.setAttribute("sort", "1");
+            }
+        } else {
+            // Update session with new value from parameter
+            session.setAttribute("sort", sortOption);
+        }
+
+        String sortQuery = "";
+        switch(sortOption) {
+            case "1":
+                sortQuery += "   ORDER BY title DESC, rating DESC\n";
+                break;
+            case "2":
+                sortQuery += "   ORDER BY title DESC, rating ASC\n";
+                break;
+            case "3":
+                sortQuery += "   ORDER BY title ASC, rating DESC\n";
+                break;
+            case "4":
+                sortQuery += "   ORDER BY title ASC, rating ASC\n";
+                break;
+            case "5":
+                sortQuery += "   ORDER BY rating DESC, title DESC\n";
+                break;
+            case "6":
+                sortQuery += "   ORDER BY rating DESC, title ASC\n";
+                break;
+            case "7":
+                sortQuery += "  ORDER BY rating ASC, title DESC\n";
+                break;
+            case "8":
+                sortQuery += "  ORDER BY rating ASC, title ASC\n";
+                break;
+        }
+
+
         // Get a connection from dataSource and let resource manager close the connection after usage.
         try (Connection conn = dataSource.getConnection()) {
 
             // Construct a query with parameter represented by "?"
-            String query =   "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
+            String query =
+                    "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
+                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres_id,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
-                    "       ROUND(AVG(r.rating),2) AS rating\n" +
+                    "       ROUND(AVG(m.rating),2) AS rating\n" +
                     "FROM (\n" +
-                    "    SELECT id, title, year, director\n" +
-                    "    FROM movies\n" +
-                    "    WHERE id IN (\n" +
+                    "    SELECT id, title, year, director, avg(r.rating) as rating\n" +
+                    "    FROM movies INNER JOIN ratings r ON r.movieId = id\n" +
+                    "    WHERE (id IN (\n" +
                     "        SELECT movieId\n" +
                     "        FROM genres_in_movies\n" +
-                    "        WHERE genreId = ?\n" +
+                    "        WHERE genreId = COALESCE(NULLIF(?, ''), genreId)\n" +
                     "    )\n" +
+                                title_match_query +
+                    "    GROUP BY id, title, year, director\n" +
+                         sortQuery +
                     "    LIMIT ?\n" +
                     "    OFFSET ?\n" +
                     ") m\n" +
-                    "INNER JOIN ratings r ON r.movieId = m.id\n" +
                     "INNER JOIN genres_in_movies gim ON m.id = gim.movieId\n" +
                     "INNER JOIN genres g ON gim.genreId = g.id\n" +
                     "INNER JOIN stars_in_movies AS sim ON m.id = sim.movieId\n" +
@@ -138,13 +226,11 @@ public class GenreServlet extends HttpServlet {
                     "    FROM stars_in_movies AS sim\n" +
                     "    GROUP BY sim.starId\n" +
                     ") AS mdb ON s.id = mdb.starId\n" +
-                    "GROUP BY m.id, m.title, m.year, m.director;\n";;
+                    "GROUP BY m.id, m.title, m.year, m.director\n" +
+                     sortQuery +";";
 
 
-
-
-
-//                    "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
+//            "SELECT m.id AS movieId, m.title, m.year, m.director,\n" +
 //                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
 //                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
 //                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
@@ -155,76 +241,25 @@ public class GenreServlet extends HttpServlet {
 //                    "    WHERE id IN (\n" +
 //                    "        SELECT movieId\n" +
 //                    "        FROM genres_in_movies\n" +
-//                    "        WHERE genreId = ?\n" +
+//                    "        WHERE genreId = COALESCE(NULLIF(?, ''), genreId)\n" +
 //                    "    )\n" +
+//                    "     AND title LIKE CONCAT(COALESCE(NULLIF(?, ''), title), '%')\n" +
 //                    "    LIMIT ?\n" +
 //                    "    OFFSET ?\n" +
 //                    ") m\n" +
 //                    "INNER JOIN ratings r ON r.movieId = m.id\n" +
+//
 //                    "INNER JOIN genres_in_movies gim ON m.id = gim.movieId\n" +
 //                    "INNER JOIN genres g ON gim.genreId = g.id\n" +
-//                    "LEFT JOIN (\n" +
-//                    "    SELECT sim.movieId, s.id, s.name, COUNT(sim.movieId) AS num_movies\n" +
-//                    "    FROM stars_in_movies sim\n" +
-//                    "    JOIN stars s ON sim.starId = s.id\n" +
-//                    "    GROUP BY sim.movieId, s.id, s.name\n" +
-//                    ") s ON m.id = s.movieId\n" +
-//                    "GROUP BY m.id, m.title, m.year, m.director;\n";
-
-
-//                    "SELECT DISTINCT m.id AS movieId, m.title, m.year, m.director,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
-//                    "       ROUND(AVG(r.rating),2) AS rating\n" +
-//                    "FROM (\n" +
-//                    "    SELECT id, title, year, director\n" +
-//                    "    FROM movies m\n" +
-//                    "    WHERE EXISTS (\n" +
-//                    "        SELECT 1\n" +
-//                    "        FROM genres_in_movies gim\n" +
-//                    "        WHERE gim.genreId = ?\n" +
-//                    "        AND gim.movieId = m.id\n" +
-//                    "    )\n" +
-//                    "  LIMIT ?\n" +  // Include a parameter for the number of results per page
-//                    "  OFFSET ?\n" + // Include a parameter for the offset based on the page number and number of results per page
-//                    ") m\n" +
-//                    "INNER JOIN ratings r ON r.movieId = m.id\n" +
-//                    "INNER JOIN genres_in_movies gim ON m.id = gim.movieId\n" +
-//                    "INNER JOIN genres g ON gim.genreId = g.id\n" +
-//                    "LEFT JOIN (\n" +
-//                    "    SELECT sim.movieId, s.name, s.id, COUNT(*) AS num_movies\n" +
-//                    "    FROM stars_in_movies sim\n" +
-//                    "    INNER JOIN stars s ON sim.starId = s.id\n" +
-//                    "    GROUP BY sim.movieId, s.id\n" +
-//                    ") s ON m.id = s.movieId\n" +
-//                    "GROUP BY m.id, m.title, m.year, m.director;\n";
-
-
-
-// //query 3
-//                    "SELECT r.movieId, m.title, m.year, m.director,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
-//                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
-//                    "       ROUND(AVG(r.rating),2) AS rating\n" +
-//                    "FROM ratings AS r\n" +
-//                    "INNER JOIN movies AS m ON r.movieId = m.id\n" +
-//                    "INNER JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
+//                    "INNER JOIN stars_in_movies AS sim ON m.id = sim.movieId\n" +
 //                    "INNER JOIN stars AS s ON sim.starId = s.id\n" +
-//                    "INNER JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
-//                    "INNER JOIN genres AS g ON gim.genreId = g.id\n" +
 //                    "INNER JOIN (\n" +
 //                    "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
 //                    "    FROM stars_in_movies AS sim\n" +
 //                    "    GROUP BY sim.starId\n" +
 //                    ") AS mdb ON s.id = mdb.starId\n" +
-//                    "  WHERE (EXISTS (\n" +
-//                    "    SELECT 1\n" +
-//                    "    FROM genres_in_movies AS gim2\n" +
-//                    "    WHERE gim2.genreId = ? AND gim2.movieId = r.movieId\n" +
-//                    "))\n" +
-//                    "GROUP BY r.movieId, m.title, m.year, m.director;";
+//                    "GROUP BY m.id, m.title, m.year, m.director\n" +
+//                    sortQuery;
 
             // Declare our statement
             PreparedStatement statement = conn.prepareStatement(query);
@@ -232,8 +267,17 @@ public class GenreServlet extends HttpServlet {
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             statement.setString(1, genreId);
-            statement.setInt(2, numResultsPerPage);
-            statement.setInt(3, offset);
+            if (!special_title){
+                statement.setString(2, title);
+                statement.setInt(3, numResultsPerPage);
+                statement.setInt(4, offset);
+            }
+            else{
+                statement.setInt(2, numResultsPerPage);
+                statement.setInt(3, offset);
+            }
+
+
 
             // Perform the query
             ResultSet rs = statement.executeQuery();
@@ -246,13 +290,14 @@ public class GenreServlet extends HttpServlet {
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
                 String movie_genres = rs.getString("genres");
+                String genres_id = rs.getString("genres_id");
                 String movie_stars = rs.getString("stars");
                 String stars_id = rs.getString("stars_id");
                 String movie_rating = rs.getString("rating");
                 String movie_id = rs.getString("movieId");
 
-                System.out.println(movie_stars);
-                System.out.println(stars_id);
+//                System.out.println(movie_stars);
+//                System.out.println(stars_id);
 
 //                String star_id = rs.getString("id");
 //                String star_name = rs.getString("name");
@@ -264,6 +309,7 @@ public class GenreServlet extends HttpServlet {
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
                 jsonObject.addProperty("movie_genres", movie_genres);
+                jsonObject.addProperty("genres_id", genres_id);
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("stars_id", stars_id);
                 jsonObject.addProperty("movie_rating", movie_rating);
