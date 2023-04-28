@@ -53,6 +53,8 @@ public class LoginFilter implements Filter {
         allowedURIs.add("logo.png");
         allowedURIs.add("movie.png");
         allowedURIs.add("login.css");
+        allowedURIs.add("FFFFlogo.png");
+        allowedURIs.add("lzh.png");
     }
 
     public void destroy() {
