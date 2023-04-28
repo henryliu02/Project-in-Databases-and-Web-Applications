@@ -90,9 +90,31 @@ function handleResult(resultData) {
 
         button.addEventListener("click", function() {
             console.log("button clicked");
+            var movie = resultData[i]["movie_title"];
             var movie_id = resultData[i]["movie_id"];
-            window.location.href = "shopping_cart.html?id=" + movie_id;
-            // window.location.href = "single-movie.html?id=" + movie_id;
+
+            // Prepare data to send to the servlet
+            var data = {
+                id: movie_id,
+                title: movie,
+                action: "add_to_cart"
+            };
+
+            // Send a POST request to the ShoppingCartServlet
+            $.ajax({
+                type: "POST",
+                url: "api/shoppingcart",
+                data: data,
+                success: function() {
+                    // Show a popup message
+                    alert("Movie added to cart!\nEnjoy!");
+                    // Redirect to shopping_cart.html
+                    // window.location.href = "shoppingcart.html";
+                },
+                error: function(error) {
+                    console.error("Error:", error);
+                }
+            });
         });
 
         var buttonCell = document.createElement("td");
