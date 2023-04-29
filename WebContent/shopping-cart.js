@@ -1,49 +1,32 @@
 
-function getParameterByName(target) {
-    // Get request URL
-    let url = window.location.href;
-    // Encode target parameter name to url encoding
-    target = target.replace(/[\[\]]/g, "\\$&");
+function handleResult(resultData) {
 
-    // Ues regular expression to find matched parameter value
-    let regex = new RegExp("[?&]" + target + "(=([^&#]*)|&|#|$)"),
-        results = regex.exec(url);
-    if (!results) return null;
-    if (!results[2]) return '';
 
-    // Return the decoded parameter value
-    return decodeURIComponent(results[2].replace(/\+/g, " "));
+
+
 }
-
-/**
- * Handles the data returned by the API, read the jsonObject and populate data into html elements
- * @param resultData jsonObject
- */
-
-function handleCartResult( resultData ){
-    document.getElementById("error").style.visibility = "hidden";
-    let movIt = jQuery("#cart_table_body");
-    var movie;
-    if( resultData.length != 0){
-        var sum = 0;
-        for (i = 0; i < resultData.length; ++i) {
-            movie = "<tr><th>" + '<a href="single_movie.html?id=' + resultData[i].ID + '">'
-                + resultData[i].TITLE + '   </a>'+"<button onclick=removeCart({'type':'2','item':'"+resultData[i].ID+"'});window.history.go(0)>➖</button><br></th>" // link to singleMovie.html
-                + "<th>" + resultData[i].YEAR + "</th>"
-                + "<th>" + resultData[i].DIRECTOR + "</th>"
-                // text field for item quantity
-                + "<th>" + "<input type = 'number' onchange=changeAmount('"+resultData[i].ID+"') value='"+resultData[i].AMOUNT+"' min = '0', max='10' id='"+resultData[i].ID+"'>"
-                //"<input class = 'amount' name="+resultData[i].ID+" type='number' onchange='changeAmount('"+resultData[i].ID+"')' " +
-                //	"value='"+resultData[i].AMOUNT+"' min='0' max='10'>" +
-                +	"</th><th>" + resultData[i].AMOUNT * 300 + "</th></tr>";
-            sum += resultData[i].AMOUNT * 300;
-            movIt.append(movie); // append
-        }
-        jQuery("#container").append("<div>Total Price :"+sum+"</div>");
-        $("#proceed_link").text("Checkout")
-    } else {
-        jQuery("#cart_info").append("<div align='center'>Hon, Your cart is empty! Go and grab something</div>");
+handleSessionData(resultDataString)
+{
+    let resultDataJson = JSON.parse(resultDataString);
+    console.log("handle session response");
+    console.log(resultDataJson);
+    console.log(resultDataJson["sessionID"]);
+    handleMovieArray(resultDataJson["previousMovies"]);
+}
+function handleMovieArray(resultArray) {
+    console.log(resultArray);
+    let movie_list = $("#movie_list");
+    // change it to html list
+    let res = "<ul>";
+    for (let i = 0; i < resultArray.length; i++) {
+        // each item will be in a bullet point
+        res += "<li>" + resultArray[i] + "</li>";
     }
+    res += "</ul>";
+
+    // clear the old array and show the new array in the frontend
+    movie_list.html("");
+    movie_list.append(res);
 }
 
 /**
@@ -51,13 +34,18 @@ function handleCartResult( resultData ){
  */
 
 // Get id from URL
-let starId = getParameterByName('id');
-console.log("starID: ", starId)
-
+let movieId = getParameterByName('id');
+console.log("movieID: ", movieId)
+jQuery.ajax({
+    dataType: "json",  // Setting return data type
+    method: "POST",// Setting request method
+    url: "api/shopping-cart?id=" + movieId, // Setting request url, which is mapped by StarsServlet in Stars.java
+    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+});
 // Makes the HTTP GET request and registers on success callback function handleResult
 jQuery.ajax({
     dataType: "json",  // Setting return data type
     method: "GET",// Setting request method
-    url: "api/shopping-cart", // Setting request url, which is mapped by StarsServlet in Stars.java
-    success: (resultData) => handleResult(resultData) // Setting callback function to handle data returned successfully by the SingleStarServlet
+    url: "api/shopping-cart?id=" + movieId, // Setting request url, which is mapped by StarsServlet in Stars.java
+    success: handleSessionData // Setting callback function to handle data returned successfully by the SingleStarServlet
 });
