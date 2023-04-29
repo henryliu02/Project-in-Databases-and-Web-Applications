@@ -35,7 +35,7 @@ function displayMovie(movie_id, title, quantity, price, totalAmount) {
 
     $("#checkout-button").on("click", function() {
         const totalAmount = $("#total-amount").text();
-        window.location.href = "checkout.html?total_amount=" + totalAmount;
+        window.location.href = "payment.html?total_amount=" + totalAmount;
     });
 }
 
