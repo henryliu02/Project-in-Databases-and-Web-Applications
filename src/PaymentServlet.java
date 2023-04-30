@@ -11,6 +11,8 @@ import javax.sql.DataSource;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.*;
+import java.util.HashMap;
+import java.util.Map;
 
 @WebServlet(name = "PaymentServlet", urlPatterns = "/api/checkout")
 public class PaymentServlet extends HttpServlet {
@@ -87,6 +89,22 @@ public class PaymentServlet extends HttpServlet {
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "success");
 
+            // Get the User object from the session
+            User user = (User) request.getSession().getAttribute("user");
+
+            // Fetch the entire movie cart from the User object and return it as a JSON object
+            HashMap<String, MovieCartItem> movieCart = user.getMovieCart();
+            if (movieCart == null) {
+                movieCart = new HashMap<>();
+            }
+
+            // Call the AddSalesRecord function for each movie in the cart
+            java.sql.Date currentDate = new java.sql.Date(System.currentTimeMillis());
+            for (Map.Entry<String, MovieCartItem> entry : movieCart.entrySet()) {
+                String movieId = entry.getKey();
+                addSalesRecord(user.getId(), movieId, currentDate);
+            }
+
 
         } else {
             System.out.println("payment does not exist");
@@ -98,5 +116,28 @@ public class PaymentServlet extends HttpServlet {
             responseJsonObject.addProperty("message", "Payment info not found");
         }
         response.getWriter().write(responseJsonObject.toString());
+    }
+
+    private Boolean addSalesRecord(Integer customerId, String movieId, Date date) throws IOException {
+        try (Connection conn = dataSource.getConnection()) {
+
+            String query = "INSERT INTO sales (customerId, movieId, saleDate) VALUES (?, ?, ?)";
+            PreparedStatement statement = conn.prepareStatement(query);
+            statement.setInt(1, customerId);
+            statement.setString(2, movieId);
+            statement.setDate(3, new java.sql.Date(date.getTime()));
+
+            int rowsInserted = statement.executeUpdate();
+            System.out.println("2: successfully connected and executed query");
+
+            statement.close();
+            return rowsInserted > 0;
+
+        }  catch (Exception e) {
+            System.out.println("error");
+            System.out.println(e);
+
+        }
+        return false;
     }
 }

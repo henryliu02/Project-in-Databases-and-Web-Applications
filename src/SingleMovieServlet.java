@@ -50,14 +50,20 @@ public class SingleMovieServlet extends HttpServlet{
 
             // Construct a query with parameter represented by "?"
             String query = "SELECT r.movieId, m.title, m.year, m.director,\n" +
-                    "GROUP_CONCAT(DISTINCT g.name SEPARATOR ',') AS genres,\n" +
-                    "GROUP_CONCAT(DISTINCT s.name ORDER BY s.name SEPARATOR ',') AS stars,\n" +
-                    "GROUP_CONCAT(DISTINCT s.id ORDER BY s.name SEPARATOR ',') AS stars_id,\n" +
+                    "GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ',') AS genres,\n" +
+                    "GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ',') AS genres_id,\n" +
+                    "GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ',') AS stars,\n" +
+                    "GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ',') AS stars_id,\n" +
                     "ROUND(AVG(r.rating),2) AS rating\n" +
                     "FROM ratings AS r\n" +
                     "INNER JOIN movies AS m ON r.movieId = m.id\n" +
                     "INNER JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
                     "INNER JOIN stars AS s ON sim.starId = s.id\n" +
+                    "INNER JOIN (\n" +
+                    "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
+                    "    FROM stars_in_movies AS sim\n" +
+                    "    GROUP BY sim.starId\n" +
+                    ") AS mdb ON s.id = mdb.starId\n" +
                     "INNER JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
                     "INNER JOIN genres AS g ON gim.genreId = g.id\n" +
                     "WHERE r.movieId = ?\n" +
@@ -102,6 +108,7 @@ public class SingleMovieServlet extends HttpServlet{
                 String movie_year = rs.getString("year");
                 String movie_director = rs.getString("director");
                 String movie_genres = rs.getString("genres");
+                String genres_id = rs.getString("genres_id");
                 String movie_stars = rs.getString("stars");
                 String stars_id = rs.getString("stars_id");
                 String movie_rating = rs.getString("rating");
@@ -113,6 +120,7 @@ public class SingleMovieServlet extends HttpServlet{
                 jsonObject.addProperty("movie_year", movie_year);
                 jsonObject.addProperty("movie_director", movie_director);
                 jsonObject.addProperty("movie_genres", movie_genres);
+                jsonObject.addProperty("genres_id", genres_id);
                 jsonObject.addProperty("movie_stars", movie_stars);
                 jsonObject.addProperty("stars_id", stars_id);
                 jsonObject.addProperty("movie_rating", movie_rating);
