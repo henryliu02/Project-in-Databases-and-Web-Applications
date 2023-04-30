@@ -136,4 +136,14 @@ button#order[type="submit"]:active {
     text-align: center;
 }
 
+.btn-outline-primary {
+    color: white;
+    background-color: black;
+    border-color: white;
+}
+
+.btn-outline-primary:hover {
+    color: black;
+    background-color: white;
+}
 

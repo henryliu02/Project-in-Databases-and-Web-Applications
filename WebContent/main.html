@@ -10,7 +10,7 @@
 </head>
 <body>
 <div class="mx-0">
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top w-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top w-100">
     <a class="navbar-brand" href="#">
         <img src="logo.png" width="40" height="30" class="d-inline-block align-top" alt="F">
         Fabflix
@@ -45,21 +45,22 @@
             <div class="input-group mr-2">
                 <input type="text" class="form-control" name="star" aria-label="Star Search" placeholder="Search by star">
             </div>
-            <button class="btn btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
+            <button id="search-btn" class="btn btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
         </form>
-        <a href="shoppingcart.html" class="btn btn-outline-primary my-2 my-sm-0">Cart</a>
+        <a id="cart-btn" href="shoppingcart.html" class="btn btn-outline-primary my-2 my-sm-0">Cart</a>
     </div>
 </nav>
 </div>
-
-<h1 style="text-align:center;">Browsing by movie genres</h1>
-<ul id="genre-list" style="text-align:center;"></ul>
-
-<br>
-
-<h1 style="text-align:center;">Browsing by movie titles</h1>
-<ul id="title-list" style="text-align:center;"></ul>
-
+<div class="purple-background">
+    <!--<div class="gradient-background">-->
+    <div class="content-container">
+        <h1 class="pink-text" style="text-align:center;">Browsing by movie genres</h1>
+        <ul class="white-text" id="genre-list" style="text-align:center;"></ul>
+        <br>
+        <h1 class="pink-text" style="text-align:center;">Browsing by movie titles</h1>
+        <ul class="white-text" id="title-list" style="text-align:center;"></ul>
+    </div>
+</div>
 
 
 <!-- Load jQuery and Bootstrap JS -->
