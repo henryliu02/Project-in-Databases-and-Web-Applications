@@ -14,7 +14,8 @@ h1 {
 }
 
 .hover-effect-button:hover {
-    background-color: darkslateblue; /* Change the background color on hover */
+    /*background-color: darkslateblue; !* Change the background color on hover *!*/
+    transform: translateY(-5px);
 }
 
 a {
