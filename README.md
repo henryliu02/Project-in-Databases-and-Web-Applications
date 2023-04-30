@@ -1,3 +1,18 @@
+
+DEMO URL LINK: https://youtu.be/ZiNw_DlSpkE
+
+WEBSITE LINK: http://ec2-18-204-215-238.compute-1.amazonaws.com:8080/cs122b-project2-login-cart-example/main.html
+
+
+Substring matching design: (used in searchSevlet, genreSevlet)
+
+Used substring matching design for the searching and browsing feature: 
+
+Used "Like", "And" keywords for matching searching parameter: e.g. m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))
+
+Used REGEXP for matching * category movie title: e.g.  Subquery = " m.title NOT REGEXP '^[0-9a-zA-Z]'\n";
+
+
 ### Features
 1. This example application allows you to login with the username and password provided above.
 2. When you land on the welcome page, it will show your current session ID and last access time. 
