@@ -28,5 +28,9 @@ public class User {
     public void setMovieCart(HashMap<String, MovieCartItem> movieCart) {
         this.movieCart = movieCart;
     }
+
+    public Integer getId(){
+        return this.id;
+    }
 }
 

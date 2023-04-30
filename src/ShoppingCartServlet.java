@@ -1,19 +1,30 @@
-import com.google.gson.JsonArray;
-import com.google.gson.JsonObject;
 import com.google.gson.Gson;
 
+import jakarta.servlet.ServletConfig;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import jakarta.servlet.http.HttpSession;
+
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.sql.DataSource;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 
 @WebServlet(name = "ShoppingCartServlet", urlPatterns = "/api/shoppingcart")
 public class ShoppingCartServlet extends HttpServlet{
+
+    private DataSource dataSource;
+    public void init(ServletConfig config) {
+        try {
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            System.out.println("1: successfully connect and execute query");
+
+        } catch (NamingException e) {
+            e.printStackTrace();
+        }
+    }
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws IOException {
         String action = request.getParameter("action");
 

@@ -55,30 +55,82 @@ function handleResult(resultData) {
 
     // Concatenate the html tags with resultData jsonObject to create table rows
     for (let i = 0; i < Math.min(10, resultData.length); i++) {
-        let rowHTML = "";
-        rowHTML += "<tr>";
-        rowHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_genres"] + "</td>";
+        let row = document.createElement("tr");
+        row.innerHTML += "<td>" + resultData[i]["movie_year"] + "</td>";
+        row.innerHTML += "<td>" + resultData[i]["movie_director"] + "</td>";
+
+        let genresHTML = "";
+        let genres_id = resultData[i]["genres_id"].split(",");
+        let genres = resultData[i]["movie_genres"].split(",");
+        for(let j = 0; j < genres_id.length; j++){
+            genresHTML += '<a href="genre.html?id=' + genres_id[j] + '">' + genres[j] + '</a>';
+            if (j < genres_id.length - 1) {
+                genresHTML += ", ";
+            }
+        }
+        row.innerHTML += "<td>" + genresHTML + "</td>";
 
         let starsHTML = "";
         let stars = resultData[i]["movie_stars"].split(",");
         let stars_id = resultData[i]["stars_id"].split(",");
 
         for (let j = 0; j < stars_id.length; j++) {
-            // console.log("star id for parsing into url: ", stars_id[j])
             starsHTML += '<a href="single-star.html?id=' + stars_id[j] + '">' + stars[j] + '</a>';
             if (j < stars_id.length - 1) {
                 starsHTML += ", ";
             }
         }
 
-        rowHTML += "<td>" + starsHTML + "</td>";
-        rowHTML += "<td>" + resultData[i]["movie_rating"] + "&nbsp;&star;" + "</td>";
-        rowHTML += "</tr>";
+        row.innerHTML += "<td>" + starsHTML + "</td>";
+        row.innerHTML += "<td>" + resultData[i]["movie_rating"] + "&nbsp;&star;" + "</td>";
+
+        var button = document.createElement("button");
+        button.className = "hover-effect-button"; // Add a class name to the button
+        button.textContent = "Add Cart";
+        // button.style.backgroundColor = "indigo";
+        button.style.background = "linear-gradient(to bottom right, #CC2E5D, indigo)";
+        button.style.color = "white";
+        button.style.border = "none";
+        button.style.padding = "10px 20px";
+        button.style.borderRadius = "5px";
+        button.style.fontFamily = "Helvetica Neue, Helvetica, Arial, sans-serif";
+        button.style.fontSize = "10px";
+        button.style.fontWeight = "bold";
+
+        button.addEventListener("click", function() {
+            console.log("button clicked");
+            var movie = resultData[i]["movie_title"];
+            var movie_id = resultData[i]["movie_id"];
+
+            // Prepare data to send to the servlet
+            var data = {
+                id: movie_id,
+                title: movie,
+                action: "add_to_cart"
+            };
+
+            // Send a POST request to the ShoppingCartServlet
+            $.ajax({
+                type: "POST",
+                url: "api/shoppingcart",
+                data: data,
+                success: function() {
+                    // Show a popup message
+                    alert("Movie added to cart!\nEnjoy!");
+                    // Redirect to shopping_cart.html
+                    // window.location.href = "shoppingcart.html";
+                },
+                error: function(error) {
+                    console.error("Error:", error);
+                }
+            });
+        });
+        var buttonCell = document.createElement("td");
+        buttonCell.appendChild(button);
+        row.appendChild(buttonCell);
 
         // Append the row created to the table body, which will refresh the page
-        movieTableBodyElement.append(rowHTML);
+        movieTableBodyElement.append(row);
     }
 }
 
