@@ -111,6 +111,27 @@ public class ShoppingCartServlet extends HttpServlet{
             // Store the updated movie cart in the User object
             user.setMovieCart(movieCart);
         }
+        else if ("confirmed_sale".equals(action)){
+            // Get the User object from the session
+            User user = (User) request.getSession().getAttribute("user");
+
+            // Fetch the entire movie cart from the User object and return it as a JSON object
+            HashMap<String, MovieCartItem> movieCart = user.getMovieCart();
+            if (movieCart == null) {
+                movieCart = new HashMap<>();
+            }
+
+            // Convert the movie cart to a JSON object and write it to the response
+            String movieCartJson = convertMovieCartToJson(movieCart);
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            response.getWriter().write(movieCartJson);
+
+            System.out.println("Sale confirmed, clear shopping cart");
+            movieCart = new HashMap<>();
+            // Store the updated movie cart in the User object
+            user.setMovieCart(movieCart);
+        }
     }
 
     private String convertMovieCartToJson(HashMap<String, MovieCartItem> movieCart) {
