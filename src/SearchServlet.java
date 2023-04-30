@@ -49,12 +49,6 @@ public class SearchServlet extends HttpServlet{
         String director = request.getParameter("director");
         String star = request.getParameter("star");
 
-        if (!"".equals(title))
-        {
-            session.setAttribute("title", title);
-        }
-
-
         System.out.println(title);
         System.out.println(year);
         System.out.println(director);
@@ -71,30 +65,40 @@ public class SearchServlet extends HttpServlet{
         {
             System.out.println("get prev title attribute: " + session.getAttribute("title"));
             session.setAttribute("title", title);
-            if(!"".equals(year)){
-               System.out.println("setting year attribute");
-               session.setAttribute("year", year);
-               new_search = true;
+            if(session.getAttribute("year") != null && session.getAttribute("year").equals(year)){
+                session.setAttribute("year", year);
             }
-            else if("".equals(year)){
-                System.out.println("removing year attribute");
+            else if(session.getAttribute("year") != null && !session.getAttribute("year").equals(year)){
+                new_search = true;
                 session.removeAttribute("year");
             }
+            else if(session.getAttribute("year") == null && !"".equals(year)){
+                session.setAttribute("year", year);
+                new_search = true;
+            }
 
-            if(!"".equals(star)){
+            if(session.getAttribute("star") != null && session.getAttribute("star").equals(star)){
+                session.setAttribute("star", star);
+            }
+            else if(session.getAttribute("star") != null && !session.getAttribute("star").equals(star)){
+                new_search = true;
+                session.removeAttribute("star");
+            }
+            else if(session.getAttribute("star") == null && !"".equals(star)){
                 session.setAttribute("star", star);
                 new_search = true;
             }
-            else if("".equals(star)){
-                session.removeAttribute("star");
-            }
 
-            if(!"".equals(director)) {
+            if(session.getAttribute("director") != null && session.getAttribute("director").equals(director)){
+                session.setAttribute("director", director);
+            }
+            else if(session.getAttribute("director") != null && !session.getAttribute("director").equals(director)){
+                new_search = true;
+                session.removeAttribute("director");
+            }
+            else if(session.getAttribute("director") == null && !"".equals(director)){
                 session.setAttribute("director", director);
                 new_search = true;
-            }
-            else if("".equals(director)){
-                session.removeAttribute("director");
             }
 
 
@@ -103,27 +107,52 @@ public class SearchServlet extends HttpServlet{
         {
             System.out.println("get prev year attribute: " + session.getAttribute("year"));
             session.setAttribute("year", year);
-            if(!"".equals(title)){
-               session.setAttribute("title", title);
-                new_search = true;
+
+            if(session.getAttribute("title") != null && session.getAttribute("title").equals(title)){
+                System.out.println(1);
+                session.setAttribute("title", title);
             }
-            else if("".equals(title)){
+            else if(session.getAttribute("title") != null && !session.getAttribute("title").equals(title)){
+                System.out.println(2);
+                new_search = true;
                 session.removeAttribute("title");
             }
-            if(!"".equals(star)){
+            else if(session.getAttribute("title") == null && !"".equals(title)){
+                session.setAttribute("title", title);
+                System.out.println(3);
                 new_search = true;
+            }
+
+            if(session.getAttribute("star") != null && session.getAttribute("star").equals(star)){
+                System.out.println(4);
                 session.setAttribute("star", star);
             }
-            else if("".equals(star)){
+            else if(session.getAttribute("star") != null && !session.getAttribute("star").equals(star)){
+                System.out.println(5);
+                new_search = true;
                 session.removeAttribute("star");
             }
-            if(!"".equals(director)){
+            else if(session.getAttribute("star") == null && !"".equals(star)){
+                session.setAttribute("star", star);
+                System.out.println(6);
                 new_search = true;
+            }
+
+            if(session.getAttribute("director") != null && session.getAttribute("director").equals(director)){
+                System.out.println(7);
                 session.setAttribute("director", director);
             }
-            else if("".equals(director)){
+            else if(session.getAttribute("director") != null && !session.getAttribute("director").equals(director)){
+                System.out.println(8);
+                new_search = true;
                 session.removeAttribute("director");
             }
+            else if(session.getAttribute("director") == null && !"".equals(director)){
+                session.setAttribute("director", director);
+                System.out.println(9);
+                new_search = true;
+            }
+
         }
 
         else if(director != null && !"".equals(director))
@@ -131,31 +160,40 @@ public class SearchServlet extends HttpServlet{
             System.out.println("get prev director attribute: " + session.getAttribute("director"));
             session.setAttribute("director", director);
 
-            if(!"".equals(title)){
-                new_search = true;
+            if(session.getAttribute("title") != null && session.getAttribute("title").equals(title)){
                 session.setAttribute("title", title);
             }
-            else if("".equals(title)){
+            else if(session.getAttribute("title") != null && !session.getAttribute("title").equals(title)){
                 new_search = true;
                 session.removeAttribute("title");
             }
-
-            if(!"".equals(star)){
+            else if(session.getAttribute("title") == null && !"".equals(title)){
+                session.setAttribute("title", title);
                 new_search = true;
+            }
+
+            if(session.getAttribute("star") != null && session.getAttribute("star").equals(star)){
                 session.setAttribute("star", star);
             }
-            else if("".equals(star)){
+            else if(session.getAttribute("star") != null && !session.getAttribute("star").equals(star)){
                 new_search = true;
                 session.removeAttribute("star");
             }
-
-            if(!"".equals(year)){
+            else if(session.getAttribute("star") == null && !"".equals(star)){
+                session.setAttribute("star", star);
                 new_search = true;
+            }
+
+            if(session.getAttribute("year") != null && session.getAttribute("year").equals(year)){
                 session.setAttribute("year", year);
             }
-            else if("".equals(year)){
+            else if(session.getAttribute("year") != null && !session.getAttribute("year").equals(year)){
                 new_search = true;
                 session.removeAttribute("year");
+            }
+            else if(session.getAttribute("year") == null && !"".equals(year)){
+                session.setAttribute("year", year);
+                new_search = true;
             }
 
 
@@ -165,31 +203,48 @@ public class SearchServlet extends HttpServlet{
             System.out.println("get prev star attribute: " + session.getAttribute("star"));
             session.setAttribute("star", star);
 
-            if(!"".equals(title)){
-                new_search = true;
+            if(session.getAttribute("title") != null && session.getAttribute("title").equals(title)){
+                System.out.println(1);
                 session.setAttribute("title", title);
             }
-            else if("".equals(title)){
+            else if(session.getAttribute("title") != null && !session.getAttribute("title").equals(title)){
+                System.out.println(2);
                 new_search = true;
                 session.removeAttribute("title");
             }
-
-            if(!"".equals(director)){
+            else if(session.getAttribute("title") == null && !"".equals(title)){
+                System.out.println(3);
+                session.setAttribute("title", title);
                 new_search = true;
+            }
+
+            if(session.getAttribute("director") != null && session.getAttribute("director").equals(director)){
                 session.setAttribute("director", director);
             }
-            else if("".equals(director)){
+            else if(session.getAttribute("director") != null && !session.getAttribute("director").equals(director) ){
+                System.out.println(4);
                 new_search = true;
                 session.removeAttribute("director");
             }
-
-            if(!"".equals(year)){
+            else if(session.getAttribute("director") == null && !"".equals(director)) {
+                session.setAttribute("director", director);
+                System.out.println(5);
                 new_search = true;
+            }
+
+            if(session.getAttribute("year") != null && session.getAttribute("year").equals(year)){
+                System.out.println(6);
                 session.setAttribute("year", year);
             }
-            else if("".equals(year)){
+            else if(session.getAttribute("year") != null && !session.getAttribute("year").equals(year)){
+                System.out.println(7);
                 new_search = true;
                 session.removeAttribute("year");
+            }
+            else if(session.getAttribute("year") == null && !"".equals(year)){
+                System.out.println(8);
+                session.setAttribute("year", year);
+                new_search = true;
             }
         }
 
