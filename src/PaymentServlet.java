@@ -29,14 +29,15 @@ public class PaymentServlet extends HttpServlet {
         }
     }
 
-    private Boolean PaymentVerification(String card, String firstName, String lastName) throws IOException {
+    private Boolean PaymentVerification(String card, String firstName, String lastName, Date date) throws IOException {
         try (Connection conn = dataSource.getConnection()) {
 
-            String query = "SELECT * FROM creditcards WHERE id = ? AND firstName = ? AND lastName = ?";
+            String query = "SELECT * FROM creditcards WHERE id = ? AND firstName = ? AND lastName = ? AND expiration = ?";
             PreparedStatement statement = conn.prepareStatement(query);
             statement.setString(1, card);
             statement.setString(2, firstName);
             statement.setString(3, lastName);
+            statement.setDate(4, date);
             ResultSet rs = statement.executeQuery();
             System.out.println("2: successfully connect and execute query");
 
@@ -67,6 +68,7 @@ public class PaymentServlet extends HttpServlet {
         String id = request.getParameter("id");
         String firstName = request.getParameter("firstName");
         String lastName = request.getParameter("lastName");
+        Date date = Date.valueOf(request.getParameter("expirationDate"));
 //        response.setContentType("application/json"); // Response mime type
 
 
@@ -74,7 +76,7 @@ public class PaymentServlet extends HttpServlet {
         /  in the real project, you should talk to the database to verify username/password
         */
 
-        Boolean userExist =  PaymentVerification(id, firstName, lastName);
+        Boolean userExist =  PaymentVerification(id, firstName, lastName, date);
         System.out.println(userExist);
         System.out.println("3: successfully connect and execute query");
 
@@ -84,6 +86,7 @@ public class PaymentServlet extends HttpServlet {
             System.out.println("payment exist");
             responseJsonObject.addProperty("status", "success");
             responseJsonObject.addProperty("message", "success");
+
 
         } else {
             System.out.println("payment does not exist");
