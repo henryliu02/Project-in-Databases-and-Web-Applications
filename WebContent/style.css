@@ -134,9 +134,9 @@ div.linkedin{
     background-color: rgba(255, 255, 255, 0.7);
     max-width: 90%; /* Adjust this value to change the table width */
     margin: 0 auto; /* Add auto margin to center the container */
-    width: 80%; /* 设置宽度，可以根据需要调整 */
-    padding: 30px; /* 增加内边距，可以根据需要调整 */
-    border-radius: 25px; /* 设置边框半径为半圆形 */
+    width: 80%;
+    padding: 30px;
+    border-radius: 25px;
 }
 .white-text {
     color: #ffffff;
@@ -150,8 +150,8 @@ div.linkedin{
     color: #cccccc;
 }
 .custom-thead {
-    background-color: #333; /* 深灰色背景 */
-    color: #fff; /* 白色文字 */
+    background-color: #333;
+    color: #fff;
 }
 
 .pagination .previous a,
@@ -174,13 +174,10 @@ div.linkedin{
     border-width: 1px;
     padding: 0.5rem 0.75rem;
 }
-/* 统一三个按钮的大小 */
 .custom-page-link {
     font-size: 14px;
     padding: 6px 12px;
 }
-
-
 
 .black-background {
     background-image: url('payment-background.jpeg');
