@@ -73,6 +73,12 @@ div.linkedin{
     color: white;
     font-size: 14px;
 }
+#update-btn {
+    background-color: black;
+    border-color: transparent;
+    color: white;
+    font-size: 14px;
+}
 .form-control {
     background-color: #222;
     border-color: black;
@@ -123,6 +129,15 @@ div.linkedin{
 .content-container .pink-text a:hover {
     color: #e81c67;
 }
+.table-container
+{
+    background-color: rgba(255, 255, 255, 0.7);
+    max-width: 90%; /* Adjust this value to change the table width */
+    margin: 0 auto; /* Add auto margin to center the container */
+    width: 80%; /* 设置宽度，可以根据需要调整 */
+    padding: 30px; /* 增加内边距，可以根据需要调整 */
+    border-radius: 25px; /* 设置边框半径为半圆形 */
+}
 .white-text {
     color: #ffffff;
 }
@@ -133,4 +148,47 @@ div.linkedin{
 
 .white-text a:hover {
     color: #cccccc;
+}
+.custom-thead {
+    background-color: #333; /* 深灰色背景 */
+    color: #fff; /* 白色文字 */
+}
+
+.pagination .previous a,
+.pagination .next a {
+    background-color: #000;
+    color: #fff;
+    border-width: 1px;
+}
+
+.pagination .active a {
+    background-color: #fff;
+    color: #000;
+}
+
+.page-item .active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #000;
+    border-color: transparent;!important;
+    border-width: 1px;
+    padding: 0.5rem 0.75rem;
+}
+/* 统一三个按钮的大小 */
+.custom-page-link {
+    font-size: 14px;
+    padding: 6px 12px;
+}
+
+
+
+.black-background {
+    background-image: url('payment-background.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    /*filter: hue-rotate(270deg);*/
+    position: relative;
+    min-height: 100vh;
+
 }

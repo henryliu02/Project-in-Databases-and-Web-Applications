@@ -20,7 +20,7 @@
 
 <body>
 <div class="mx-0">
-  <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top w-100">
+  <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top w-100">
     <a class="navbar-brand" href="#">
       <img src="logo.png" width="40" height="30" class="d-inline-block align-top" alt="F">
       Fabflix
@@ -55,43 +55,51 @@
         <div class="input-group mr-2">
           <input type="text" class="form-control" name="star" aria-label="Star Search" placeholder="Search by star">
         </div>
-        <button class="btn btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
+        <button id="search-btn" class="btn hover-effect-button btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
       </form>
-      <a href="shoppingcart.html" class="btn btn-outline-primary my-2 my-sm-0">Cart</a>
+      <a id="cart-btn" href="shoppingcart.html" class="hover-effect-button btn btn-outline-primary my-2 my-sm-0">Cart</a>
     </div>
   </nav>
 </div>
 
-<div class="checkout-box">
-  <h2>Checkout</h2>
-  <form id="payment_form" method="post" action="#">
-    <div class="form-group">
-      <label for="id">Card Number</label>
-      <input name="id" placeholder="Enter Credit Card Number" type="text" class="form-control" id="id">
-    </div>
+<div class="dark-background">
+  <div class="checkbox-container"> <!-- 添加一个Bootstrap容器 -->
+<!--    <div class="row">-->
+<!--      <div class="col-md-6 col-lg-4 mx-auto"> &lt;!&ndash; 设置Bootstrap栅格 &ndash;&gt;-->
+        <div class="checkout-box">
+          <h2>Checkout</h2>
+          <form id="payment_form" method="post" action="#">
+            <div class="form-group">
+              <label for="id">Card Number</label>
+              <input name="id" placeholder="Enter Credit Card Number" type="text" class="form-control" id="id">
+            </div>
 
-    <div class="form-group">
-      <label for="firstName">First Name</label>
-      <input name="firstName" placeholder="Enter First Name" type="text" class="form-control" id="firstName">
-    </div>
+            <div class="form-group">
+              <label for="firstName">First Name</label>
+              <input name="firstName" placeholder="Enter First Name" type="text" class="form-control" id="firstName">
+            </div>
 
-    <div class="form-group">
-      <label for="lastName">Last Name</label>
-      <input name="lastName" placeholder="Enter Last Name" type="text" class="form-control" id="lastName">
-    </div>
+            <div class="form-group">
+              <label for="lastName">Last Name</label>
+              <input name="lastName" placeholder="Enter Last Name" type="text" class="form-control" id="lastName">
+            </div>
 
-    <div class="form-group">
-      <label for="expirationDate">Expiration Date</label>
-      <!--      min="2023-04-01"-->
-      <input name="expirationDate" type="date" class="form-control" id="expirationDate" required>
-    </div>
+            <div class="form-group">
+              <label for="expirationDate">Expiration Date</label>
+              <!--      min="2023-04-01"-->
+              <input name="expirationDate" type="date" class="form-control" id="expirationDate" required>
+            </div>
 
-    <div id="total_amount_message" class="mt-3"></div>
-    <!-- add another field for date   -->
-    <button id="order" type="submit" class="btn btn-primary">Place Order</button>
+            <div id="total_amount_message" class="mt-3"></div>
+            <!-- add another field for date   -->
+            <button id="order" type="submit" class="btn btn-primary">Place Order</button>
 
-  </form>
-  <div id="login_error_message" class="mt-3"></div>
+          </form>
+          <div id="login_error_message" class="mt-3"></div>
+        </div>
+<!--      </div>-->
+<!--    </div>-->
+  </div>
 </div>
 <!-- Include our own JS file -->
 <!-- Load jQuery and Bootstrap JS -->

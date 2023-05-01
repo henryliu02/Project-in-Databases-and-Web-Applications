@@ -22,7 +22,7 @@
 
 <body>
 <div class="mx-0">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top w-100">
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top w-100">
         <a class="navbar-brand" href="#">
             <img src="logo.png" width="40" height="30" class="d-inline-block align-top" alt="F">
             Fabflix
@@ -57,19 +57,19 @@
                 <div class="input-group mr-2">
                     <input type="text" class="form-control" name="star" aria-label="Star Search" placeholder="Search by star">
                 </div>
-                <button class="btn btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
+                <button id="search-btn" class="btn hover-effect-button btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
             </form>
-            <a href="shoppingcart.html" class="btn btn-outline-primary my-2 my-sm-0">Cart</a>
+            <a id="cart-btn" href="shoppingcart.html" class="hover-effect-button btn btn-outline-primary my-2 my-sm-0">Cart</a>
         </div>
     </nav>
 </div>
-
-
+<div class="black-background">
+<div class="table-container">
 <h1 id="movie_info"></h1>
 <!-- Id "movie_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
 <table id=movie_table class="table table-bordered table-striped">
     <!-- Create a table header -->
-    <thead class="thead-dark">
+    <thead class="custom-thead">
     <tr>
         <!-- Titles of each column-->
         <th>Release Year</th>
@@ -84,6 +84,8 @@
     <!-- Again, id "movie_table_body" is useful for jQuery to find this html element -->
     <tbody id=movie_table_body></tbody>
 </table>
+</div>
+</div>
 
 
 <!-- Load jQuery and Bootstrap JS -->
