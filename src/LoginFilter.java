@@ -54,6 +54,7 @@ public class LoginFilter implements Filter {
         allowedURIs.add("movie.png");
         allowedURIs.add("login.css");
         allowedURIs.add("lzh.png");
+        allowedURIs.add("song.mp3");
     }
 
     public void destroy() {
