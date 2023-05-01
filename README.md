@@ -3,6 +3,7 @@ DEMO URL LINK: https://youtu.be/ZiNw_DlSpkE
 
 WEBSITE LINK: http://ec2-18-204-215-238.compute-1.amazonaws.com:8080/cs122b-project2/login.html
 
+Added music background effect to all pages
 
 Substring matching design: (used in searchSevlet, genreSevlet)
 
