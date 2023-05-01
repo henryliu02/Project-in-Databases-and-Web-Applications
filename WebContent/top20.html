@@ -22,7 +22,7 @@
 
 <body>
 
-<nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top w-100">
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top w-100">
     <a class="navbar-brand" href="#">
         <img src="logo.png" width="40" height="30" class="d-inline-block align-top" alt="F">
         Fabflix
@@ -44,12 +44,12 @@
         </ul>
     </div>
 </nav>
-
+<div class="table-container">
 <h1> Top 20 Rated Movies</h1>
 <!-- Id "movie_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS -->
 <table id=movie_table class="table table-bordered table-striped">
     <!-- Create a table header -->
-    <thead class="thead-dark">
+    <thead class="custom-thead">
     <tr>
         <!-- Titles of each column-->
         <th>Title</th>
@@ -64,7 +64,7 @@
     <!-- Again, id "movie_table_body" is useful for jQuery to find this html element -->
     <tbody id=movie_table_body></tbody>
 </table>
-
+</div>
 
 <!-- Load jQuery and Bootstrap JS -->
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>

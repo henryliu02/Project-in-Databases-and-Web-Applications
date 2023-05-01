@@ -9,178 +9,181 @@
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-<div class="mx-0">
-    <nav class="navbar navbar-expand-lg navbar-light bg-light fixed-top w-100">
-        <a class="navbar-brand" href="#">
-            <img src="logo.png" width="40" height="30" class="d-inline-block align-top" alt="F">
-            Fabflix
-        </a>
-        <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
-                aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-            <span class="navbar-toggler-icon"></span>
-        </button>
+<!--<div class="dark-background">-->
+    <div class="mx-0">
+        <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top w-100">
+            <a class="navbar-brand" href="#">
+                <img src="logo.png" width="40" height="30" class="d-inline-block align-top" alt="F">
+                Fabflix
+            </a>
+            <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarNav"
+                    aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
 
-        <div class="collapse navbar-collapse" id="navbarNav">
-            <ul class="navbar-nav mr-auto">
-                <li class="nav-item">
-                    <a class="nav-link" href="main.html">Home</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="top20.html">Top20</a>
-                </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                </li>
-            </ul>
-            <form class="form-inline my-2 my-lg-0" id="search_form" action="genre.html" method="get">
-                <div class="input-group mr-2">
-                    <input type="text" class="form-control" name="title_" aria-label="Title Search" placeholder="Search by title">
-                </div>
-                <div class="input-group mr-2">
-                    <input type="text" class="form-control" name="year" aria-label="Year Search" placeholder="Search by year">
-                </div>
-                <div class="input-group mr-2">
-                    <input type="text" class="form-control" name="director" aria-label="Director Search" placeholder="Search by director">
-                </div>
-                <div class="input-group mr-2">
-                    <input type="text" class="form-control" name="star" aria-label="Star Search" placeholder="Search by star">
-                </div>
-                <button class="btn btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
-            </form>
-            <a href="shoppingcart.html" class="btn btn-outline-primary my-2 my-sm-0">Cart</a>
-        </div>
-    </nav>
-</div>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav mr-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="main.html">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="top20.html">Top20</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#">About</a>
+                    </li>
+                </ul>
+                <form class="form-inline my-2 my-lg-0" id="search_form" action="genre.html" method="get">
+                    <div class="input-group mr-2">
+                        <input type="text" class="form-control" name="title_" aria-label="Title Search" placeholder="Search by title">
+                    </div>
+                    <div class="input-group mr-2">
+                        <input type="text" class="form-control" name="year" aria-label="Year Search" placeholder="Search by year">
+                    </div>
+                    <div class="input-group mr-2">
+                        <input type="text" class="form-control" name="director" aria-label="Director Search" placeholder="Search by director">
+                    </div>
+                    <div class="input-group mr-2">
+                        <input type="text" class="form-control" name="star" aria-label="Star Search" placeholder="Search by star">
+                    </div>
+                    <button id="search-btn" class="btn hover-effect-button btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
+                </form>
+                <a id="cart-btn" href="shoppingcart.html" class="hover-effect-button btn btn-outline-primary my-2 my-sm-0">Cart</a>
+            </div>
+        </nav>
+    </div>
+    <div class="table-container">
+    <h1 id="movie_info"></h1>
+    <!-- Id "movie_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS-->
+    <div class="float-right">
+        <form action="genre.html" method="get">
+            <div class="dataTables_length" id="movie_table_length">
+                <label style="font-size: 14px;">
+    <!--                Sort entries-->
+                    <select style="width: 150px;" name="sort" id="movie_table_sort_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
+                        <option value="1">Title↑ Rating↑</option>
+                        <option value="2">Title↑ Rating↓</option>
+                        <option value="3">Title↓ Rating↑</option>
+                        <option value="4">Title↓ Rating↓</option>
+                        <option value="5">Rating↑ Title↑</option>
+                        <option value="6">Rating↑ Title↓</option>
+                        <option value="7">Rating↓ Title↑</option>
+                        <option value="8">Rating↓ Title↓</option>
+                    </select>
+                </label>
 
-<h1 id="movie_info"></h1>
-<!-- Id "movie_table" is useful for jQuery to find the html element with id, class here is mapping to Bootstrap defined class CSS-->
-<div class="float-right">
-    <form action="genre.html" method="get">
-        <div class="dataTables_length" id="movie_table_length">
-            <label style="font-size: 14px;">
-<!--                Sort entries-->
-                <select style="width: 150px;" name="sort" id="movie_table_sort_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
-                    <option value="1">Title↑ Rating↑</option>
-                    <option value="2">Title↑ Rating↓</option>
-                    <option value="3">Title↓ Rating↑</option>
-                    <option value="4">Title↓ Rating↓</option>
-                    <option value="5">Rating↑ Title↑</option>
-                    <option value="6">Rating↑ Title↓</option>
-                    <option value="7">Rating↓ Title↑</option>
-                    <option value="8">Rating↓ Title↓</option>
-                </select>
-            </label>
-
-            <label style="font-size: 14px;">
-<!--                Show entries-->
-                <select style="width: 150px;" name="n" id="movie_table_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
-                    <option value="10">10 per page</option>
-                    <option value="25">25 per page</option>
-                    <option value="50">50 per page</option>
-                    <option value="100">100 per page</option>
-                </select>
-            </label>
-            <button type="submit" class="btn btn-primary btn-sm ml-2">Update</button>
-        </div>
-    </form>
-</div>
-
-
-<table id=movie_table class="table table-bordered table-striped">
-    <!-- Create a table header -->
-    <thead class="thead-dark">
-    <tr>
-        <!-- Titles of each column-->
-        <th>Movie Title</th>
-        <th>Release Year</th>
-        <th>Director</th>
-        <th>Genres</th>
-        <th>Stars</th>
-        <th>Rating</th>
-        <th>Action</th>
-    </tr>
-    </thead>
-    <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
-    <!-- Again, id "movie_table_body" is useful for jQuery to find this html element -->
-    <tbody id=movie_table_body></tbody>
-</table>
+                <label style="font-size: 14px;">
+    <!--                Show entries-->
+                    <select style="width: 150px;" name="n" id="movie_table_select" aria-controls="movie_table" class="custom-select custom-select-sm form-control form-control-sm">
+                        <option value="10">10 per page</option>
+                        <option value="25">25 per page</option>
+                        <option value="50">50 per page</option>
+                        <option value="100">100 per page</option>
+                    </select>
+                </label>
+                <button id="update-btn" type="submit" class="btn btn-primary btn-sm ml-2">Update</button>
+            </div>
+        </form>
+    </div>
 
 
-<div class="dataTables_info" id="movie_table_info" role="status" aria-live="polite"></div>
-<div class="dataTables_paginate paging_simple_numbers" id="movie_table_paginate">
-    <ul class="pagination">
-        <li class="page-item previous" id="movie_table_previous">
-            <a href="#" aria-controls="movie_table" data-dt-idx="0" tabindex="0" class="page-link" id="prev-button">Previous</a>
-        </li>
-        <li class="page-item active">
-            <a href="#" aria-controls="movie_table" data-dt-idx="1" tabindex="0" class="page-link" id="active-page"></a>
-        </li>
-        <li class="page-item next" id="movie_table_next">
-            <a href="#" aria-controls="movie_table" data-dt-idx="2" tabindex="0" class="page-link" id="next-button">Next</a>
-        </li>
-    </ul>
-</div>
+    <table id=movie_table class="table table-bordered table-striped">
+        <!-- Create a table header -->
+        <thead class="custom-thead">
+        <tr>
+            <!-- Titles of each column-->
+            <th>Movie Title</th>
+            <th>Release Year</th>
+            <th>Director</th>
+            <th>Genres</th>
+            <th>Stars</th>
+            <th>Rating</th>
+            <th>Action</th>
+        </tr>
+        </thead>
+        <!-- Table body is left empty here, will be populated with the data retrieved with index.js -->
+        <!-- Again, id "movie_table_body" is useful for jQuery to find this html element -->
+        <tbody id=movie_table_body></tbody>
+    </table>
 
 
-<!-- Load jQuery and Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
-<script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
-<script>// Get the current page number from the URL parameter or from session or default to 1
-let urlParams = new URLSearchParams(window.location.search);
-let currentPage = urlParams.get('page') || sessionStorage.getItem('current_page') || 1;
-// Assigns again to sessionStorage
-sessionStorage.setItem('current_page', currentPage);
-</script>
 
-<script src="genre.js"></script>
+    <div class="dataTables_info" id="movie_table_info" role="status" aria-live="polite"></div>
+    <div class="dataTables_paginate paging_simple_numbers" id="movie_table_paginate">
+        <ul class="pagination">
+            <li class="page-item previous" id="movie_table_previous">
+                <a href="#" aria-controls="movie_table" data-dt-idx="0" tabindex="0" class="page-link custom-page-link" id="prev-button">Previous</a>
+            </li>
+            <li class="page-item active">
+                <a href="#" aria-controls="movie_table" data-dt-idx="1" tabindex="0" class="page-link custom-page-link" id="active-page"></a>
+            </li>
+            <li class="page-item next" id="movie_table_next">
+                <a href="#" aria-controls="movie_table" data-dt-idx="2" tabindex="0" class="page-link custom-page-link" id="next-button">Next</a>
+            </li>
+        </ul>
+    </div>
+    </div>
 
-<script>
-    // update the active page element with the current page, put it here so that it runs after genres.js to update the currentPage
-    document.getElementById('active-page').textContent = currentPage;
-    console.log("running inline js");
-    document.addEventListener('DOMContentLoaded', function () {
-        // Get the value of 'n' from sessionStorage
 
-        let sort = sessionStorage.getItem('sort');
-        console.log("got sort: ", sort);
-        if (sort) {
-            // Get the select element by its id
-            let movieTableSortSelect = document.getElementById('movie_table_sort_select');
+    <!-- Load jQuery and Bootstrap JS -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
+    <script>// Get the current page number from the URL parameter or from session or default to 1
+    let urlParams = new URLSearchParams(window.location.search);
+    let currentPage = urlParams.get('page') || sessionStorage.getItem('current_page') || 1;
+    // Assigns again to sessionStorage
+    sessionStorage.setItem('current_page', currentPage);
+    </script>
 
-            // Loop through the options of the select element
-            for (let i = 0; i < movieTableSortSelect.options.length; i++) {
-                // If the option value matches the value of 'n', set the 'selected' attribute
-                if (movieTableSortSelect.options[i].value === sort) {
-                    movieTableSortSelect.options[i].selected = true;
-                    break;
+    <script src="genre.js"></script>
+
+    <script>
+        // update the active page element with the current page, put it here so that it runs after genres.js to update the currentPage
+        document.getElementById('active-page').textContent = currentPage;
+        console.log("running inline js");
+        document.addEventListener('DOMContentLoaded', function () {
+            // Get the value of 'n' from sessionStorage
+
+            let sort = sessionStorage.getItem('sort');
+            console.log("got sort: ", sort);
+            if (sort) {
+                // Get the select element by its id
+                let movieTableSortSelect = document.getElementById('movie_table_sort_select');
+
+                // Loop through the options of the select element
+                for (let i = 0; i < movieTableSortSelect.options.length; i++) {
+                    // If the option value matches the value of 'n', set the 'selected' attribute
+                    if (movieTableSortSelect.options[i].value === sort) {
+                        movieTableSortSelect.options[i].selected = true;
+                        break;
+                    }
                 }
             }
-        }
 
-        let n = sessionStorage.getItem('rowPerPage');
-        console.log("got rowPerPage: ", n);
-
+            let n = sessionStorage.getItem('rowPerPage');
+            console.log("got rowPerPage: ", n);
 
 
-        if (n) {
-            // Get the select element by its id
-            let movieTableSelect = document.getElementById('movie_table_select');
 
-            // Loop through the options of the select element
-            for (let i = 0; i < movieTableSelect.options.length; i++) {
-                // If the option value matches the value of 'n', set the 'selected' attribute
-                if (movieTableSelect.options[i].value === n) {
-                    movieTableSelect.options[i].selected = true;
-                    break;
+            if (n) {
+                // Get the select element by its id
+                let movieTableSelect = document.getElementById('movie_table_select');
+
+                // Loop through the options of the select element
+                for (let i = 0; i < movieTableSelect.options.length; i++) {
+                    // If the option value matches the value of 'n', set the 'selected' attribute
+                    if (movieTableSelect.options[i].value === n) {
+                        movieTableSelect.options[i].selected = true;
+                        break;
+                    }
                 }
             }
-        }
 
-    });
-</script>
-<script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
-
+        });
+    </script>
+    <script src="//cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+<!--</div>>-->
 </body>
 
 </html>
