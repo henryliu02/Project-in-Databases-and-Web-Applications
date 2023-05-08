@@ -2,7 +2,7 @@
 <web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns="http://xmlns.jcp.org/xml/ns/javaee"
          xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
          version="3.1">
-    <display-name>project2</display-name>
+    <display-name>project3</display-name>
     <!-- The landing page is set to index.html. But if users are not logged in, they will still be redirected to login.html -->
     <welcome-file-list>
         <welcome-file>main.html</welcome-file>
@@ -10,7 +10,7 @@
     
     <!-- Register the DataSource which defined in META-INF/context.xml-->
     <resource-ref>
-        <description>cs122b-project2</description>
+        <description>cs122b-project3</description>
         <res-ref-name>jdbc/moviedb</res-ref-name>
         <res-type>javax.sql.DataSource</res-type>
         <res-auth>Container</res-auth>
