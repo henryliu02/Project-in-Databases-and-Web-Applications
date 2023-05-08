@@ -15,6 +15,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.16.0/umd/popper.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+    <script src='https://www.google.com/recaptcha/api.js' type="text/javascript"></script>
     <style>
         .audio-container {
             position: fixed;
@@ -45,7 +46,8 @@
                     <label for="password">Password</label>
                     <input name="password" placeholder="Enter Password" type="password" class="form-control" id="password">
                 </div>
-                <button type="submit" class="btn btn-primary">Login</button>
+                <button type="submit" VALUE="Submit" class="btn btn-primary">Login</button>
+                <div class="g-recaptcha" data-sitekey="6LcnUe4lAAAAAMtN7EKzZbxDuhpydOr72uSD31CV"></div>
             </form>
             <div id="login_error_message" class="mt-3"></div>
             <div class="audio-container">

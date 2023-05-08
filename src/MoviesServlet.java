@@ -152,4 +152,5 @@ public class MoviesServlet extends HttpServlet {
         // Always remember to close db connection after usage. Here it's done by try-with-resources
 
     }
+
 }

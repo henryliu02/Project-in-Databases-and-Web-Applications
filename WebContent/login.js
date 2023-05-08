@@ -29,22 +29,33 @@ function handleLoginResult(resultDataString) {
  */
 function submitLoginForm(formSubmitEvent) {
     console.log("submit login form");
-    /**
-     * When users click the submit button, the browser will not direct
-     * users to the url defined in HTML form. Instead, it will call this
-     * event handler when the event is triggered.
-     */
     formSubmitEvent.preventDefault();
 
-    $.ajax(
-        "api/login", {
-            method: "POST",
-            // Serialize the login form to the data sent by POST request
-            data: login_form.serialize(),
-            success: handleLoginResult
+    // Get the reCAPTCHA response
+    const recaptchaResponse = grecaptcha.getResponse();
+
+    // Check if the reCAPTCHA response is empty
+    if (recaptchaResponse.length === 0) {
+        $("#login_error_message").text("Please complete the reCAPTCHA.");
+        return;
+    }
+
+    // Send the form data with the reCAPTCHA response to your form-recaptcha endpoint
+    $.post("form-recaptcha", login_form.serialize() + "&g-recaptcha-response=" + recaptchaResponse, function(data) {
+        // Handle the response from your form-recaptcha endpoint
+        // If the form-recaptcha validation is successful, send the form data to the other API endpoint
+        if (data == 1 || recaptchaResponse.length != 0) {
+            $.ajax("api/login", {
+                method: "POST",
+                data: login_form.serialize(),
+                success: handleLoginResult
+            });
+        } else {
+            $("#login_error_message").text("reCAPTCHA validation failed.");
         }
-    );
+    });
 }
+
 
 // Bind the submit action of the form to a handler function
 login_form.submit(submitLoginForm);
