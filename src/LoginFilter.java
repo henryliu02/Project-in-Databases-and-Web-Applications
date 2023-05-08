@@ -55,6 +55,7 @@ public class LoginFilter implements Filter {
         allowedURIs.add("login.css");
         allowedURIs.add("lzh.png");
         allowedURIs.add("song.mp3");
+        allowedURIs.add("form-recaptcha");
     }
 
     public void destroy() {
