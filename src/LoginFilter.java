@@ -24,6 +24,7 @@ public class LoginFilter implements Filter {
 
         // Check if this URL is allowed to access without logging in
         if (this.isUrlAllowedWithoutLogin(httpRequest.getRequestURI())) {
+            System.out.println("URL allowed without login");
             // Keep default action: pass along the filter chain
             chain.doFilter(request, response);
             return;
@@ -31,6 +32,7 @@ public class LoginFilter implements Filter {
 
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("user") == null) {
+            System.out.println(httpRequest.getSession().getAttribute("user"));
             httpResponse.sendRedirect("login.html");
         } else {
             chain.doFilter(request, response);
@@ -50,11 +52,14 @@ public class LoginFilter implements Filter {
         allowedURIs.add("login.html");
         allowedURIs.add("login.js");
         allowedURIs.add("api/login");
+        allowedURIs.add("api/employeeLogin");
         allowedURIs.add("logo.png");
         allowedURIs.add("movie.png");
         allowedURIs.add("login.css");
         allowedURIs.add("lzh.png");
         allowedURIs.add("song.mp3");
+        allowedURIs.add("_dashboard/login.html");
+        allowedURIs.add("_dashboard/login.js");
         allowedURIs.add("form-recaptcha");
     }
 
