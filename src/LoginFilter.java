@@ -33,7 +33,18 @@ public class LoginFilter implements Filter {
         // Redirect to login page if the "user" attribute doesn't exist in session
         if (httpRequest.getSession().getAttribute("user") == null) {
             System.out.println(httpRequest.getSession().getAttribute("user"));
-            httpResponse.sendRedirect("login.html");
+            // Get the requested URI
+            String requestURI = httpRequest.getRequestURI();
+
+            // Check if the requested URI contains "_dashboard"
+            if (requestURI.contains("_dashboard/")) {
+                httpResponse.sendRedirect("_dashboard/login.html");
+            } else if (requestURI.contains("_dashboard")){
+                httpResponse.sendRedirect("_dashboard/login.html");
+            }
+            else {
+                httpResponse.sendRedirect("login.html");
+            }
         } else {
             chain.doFilter(request, response);
         }
