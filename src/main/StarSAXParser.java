@@ -10,15 +10,15 @@ import javax.xml.parsers.SAXParserFactory;
 
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
-
 import org.xml.sax.helpers.DefaultHandler;
-public class MovieSAXParser extends DefaultHandler {
-    private List<Movie> myMovies;
-    private String tempVal;
-    private Movie tempMovie;
 
-    public  MovieSAXParser(){
-        myMovies = new ArrayList<Movie>();
+public class StarSAXParser extends DefaultHandler {
+    private List<Star> stars;
+    private String tempVal;
+    private Star tempStar;
+
+    public StarSAXParser() {
+        stars = new ArrayList<Star>();
     }
 
     public void runExample() {
@@ -30,7 +30,7 @@ public class MovieSAXParser extends DefaultHandler {
         SAXParserFactory spf = SAXParserFactory.newInstance();
         try {
             SAXParser sp = spf.newSAXParser();
-            sp.parse("stanford-movies/mains243.xml", this);
+            sp.parse("stanford-movies/actors63.xml", this);
         } catch (SAXException se) {
             se.printStackTrace();
         } catch (ParserConfigurationException pce) {
@@ -41,8 +41,8 @@ public class MovieSAXParser extends DefaultHandler {
     }
 
     private void printData() {
-        System.out.println("No of Movies: " + myMovies.size());
-        Iterator<Movie> it = myMovies.iterator();
+        System.out.println("No of Stars: " + stars.size());
+        Iterator<Star> it = stars.iterator();
         while (it.hasNext()) {
             System.out.println(it.next().toString());
         }
@@ -51,9 +51,9 @@ public class MovieSAXParser extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         tempVal = "";
-        if (qName.equalsIgnoreCase("film")) {
-            tempMovie = new Movie();
-            tempMovie.setId(attributes.getValue("fid"));
+        if (qName.equalsIgnoreCase("actor")) {
+            tempStar = new Star();
+            tempStar.setId(attributes.getValue("id"));
         }
     }
 
@@ -64,27 +64,23 @@ public class MovieSAXParser extends DefaultHandler {
 
     @Override
     public void endElement(String uri, String localName, String qName) throws SAXException {
-        if (tempMovie != null) {
-            if (qName.equalsIgnoreCase("film")) {
-                myMovies.add(tempMovie);
-            } else if (qName.equalsIgnoreCase("fid")) {
-                tempMovie.setId(tempVal);
-            } else if (qName.equalsIgnoreCase("t")) {
-                tempMovie.setTitle(tempVal);
-            } else if (qName.equalsIgnoreCase("year")) {
+        if (tempStar != null) {
+            if (qName.equalsIgnoreCase("actor")) {
+                stars.add(tempStar);
+            } else if (qName.equalsIgnoreCase("stagename")) {
+                tempStar.setName(tempVal);
+            } else if (qName.equalsIgnoreCase("dob")) {
                 try {
-                    tempMovie.setYear(Integer.parseInt(tempVal));
+                    tempStar.setBirthYear(Integer.parseInt(tempVal));
                 } catch (NumberFormatException e) {
-                    tempMovie.setYear(0);
+                    tempStar.setBirthYear(0);
                 }
-            } else if (qName.equalsIgnoreCase("dirn")) {
-                tempMovie.setDirector(tempVal);
             }
         }
     }
+
     public static void main(String[] args) {
-        MovieSAXParser spe = new  MovieSAXParser();
+        StarSAXParser spe = new StarSAXParser();
         spe.runExample();
     }
-
 }
