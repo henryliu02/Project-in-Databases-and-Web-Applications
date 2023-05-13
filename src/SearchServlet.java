@@ -384,7 +384,7 @@ public class SearchServlet extends HttpServlet{
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
                     "       ROUND(AVG(r.rating),2) AS rating\n" +
                     "FROM ratings AS r\n" +
-                    "INNER JOIN movies AS m ON r.movieId = m.id\n" +
+                    "RIGHT JOIN movies AS m ON r.movieId = m.id\n" +
                     "INNER JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
                     "INNER JOIN stars AS s ON sim.starId = s.id\n" +
                     "INNER JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +

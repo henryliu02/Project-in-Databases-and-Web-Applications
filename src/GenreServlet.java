@@ -205,7 +205,7 @@ public class GenreServlet extends HttpServlet {
                     "       ROUND(AVG(m.rating),2) AS rating\n" +
                     "FROM (\n" +
                     "    SELECT id, title, year, director, avg(r.rating) as rating\n" +
-                    "    FROM movies INNER JOIN ratings r ON r.movieId = id\n" +
+                    "    FROM movies LEFT JOIN ratings r ON r.movieId = id\n" +
                     "    WHERE (id IN (\n" +
                     "        SELECT movieId\n" +
                     "        FROM genres_in_movies\n" +

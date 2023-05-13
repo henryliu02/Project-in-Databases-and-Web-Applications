@@ -65,7 +65,7 @@ public class MoviesServlet extends HttpServlet {
                     "JOIN genres AS g ON g.id = gim.genreId\n" +
                     "JOIN stars_in_movies AS sim ON sim.movieId = m.id\n" +
                     "JOIN stars AS s ON s.id = sim.starId\n" +
-                    "JOIN ratings AS r ON r.movieId = m.id\n" +
+                    "LEFT JOIN ratings AS r ON r.movieId = m.id\n" +
                     "INNER JOIN (\n" +
                     "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
                     "    FROM stars_in_movies AS sim\n" +

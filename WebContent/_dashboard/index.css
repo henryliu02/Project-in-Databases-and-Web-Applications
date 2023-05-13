@@ -1,0 +1,191 @@
+h1 {
+    margin-top: 3%;
+    color: indigo !important;
+    font-family: 'Pacifico', cursive;
+    font-size: 200%;
+}
+
+.navbar-brand{
+    font-family: 'Pacifico', cursive;
+}
+
+.hover-effect-button {
+    transition: background-color 0.3s; /* Add a smooth transition effect */
+}
+
+.hover-effect-button:hover {
+    /*background-color: darkslateblue; !* Change the background color on hover *!*/
+    transform: translateY(-5px);
+}
+
+a {
+    color: indigo;
+    font-size: 100%;
+}
+
+a:hover{
+    color: grey;
+}
+
+h1:hover{
+    color: blue;
+}
+body{
+    background-color: gainsboro;
+    padding-top: 50px;
+    margin: 0;
+}
+
+p{
+    margin-top: 5%;
+}
+p.footer{
+    text-align: center;
+}
+
+
+div.linkedin{
+    text-align: center;
+}
+
+.navbar{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+}
+.bg-black {
+    background-color: #282828 !important
+}
+.navbar-dark{
+    background-color: #282828!important
+}
+#search-btn {
+    background-color: black;
+    border-color: transparent;
+    color: white;
+    font-size: 14px;
+}
+
+#cart-btn {
+    background-color: black;
+    border-color: transparent;
+    color: white;
+    font-size: 14px;
+}
+#update-btn {
+    background-color: black;
+    border-color: transparent;
+    color: white;
+    font-size: 14px;
+}
+.form-control {
+    background-color: #222;
+    border-color: black;
+    color: #ccc;
+    font-size: 14px;
+}
+.form-control:focus {
+    box-shadow: none;
+}
+.purple-background {
+    background-image: url('../tech.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    /*filter: hue-rotate(270deg);*/
+    position: relative;
+    min-height: 100vh;
+
+}
+
+/*.purple-background::before {*/
+/*    content: "";*/
+/*    position: absolute;*/
+/*    top: 0;*/
+/*    left: 0;*/
+/*    right: 0;*/
+/*    bottom: 0;*/
+/*    background-color: rgba(50, 0, 100, 0.5);*/
+/*    z-index: -1;*/
+/*}*/
+
+.content-container {
+    min-height: calc(100vh - 50px);
+    padding-top: 50px;
+}
+.content-container h1,
+.content-container ul {
+    color: #e81c67!important;
+}
+.content-container .pink-text {
+    color: #e81c67;
+}
+
+.content-container .pink-text a {
+    color: #e81c67;
+}
+
+.content-container .pink-text a:hover {
+    color: #e81c67;
+}
+.table-container
+{
+    background-color: rgba(255, 255, 255, 0.7);
+    max-width: 90%; /* Adjust this value to change the table width */
+    margin: 0 auto; /* Add auto margin to center the container */
+    width: 80%;
+    padding: 30px;
+    border-radius: 25px;
+}
+.white-text {
+    color: #ffffff;
+}
+
+.white-text a {
+    color: #ffffff;
+}
+
+.white-text a:hover {
+    color: #cccccc;
+}
+.custom-thead {
+    background-color: #333;
+    color: #fff;
+}
+
+.pagination .previous a,
+.pagination .next a {
+    background-color: #000;
+    color: #fff;
+    border-width: 1px;
+}
+
+.pagination .active a {
+    background-color: #fff;
+    color: #000;
+}
+
+.page-item .active .page-link {
+    z-index: 1;
+    color: #fff;
+    background-color: #000;
+    border-color: transparent;!important;
+    border-width: 1px;
+    padding: 0.5rem 0.75rem;
+}
+.custom-page-link {
+    font-size: 14px;
+    padding: 6px 12px;
+}
+
+.black-background {
+    background-image: url('../payment-background.jpeg');
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    /*filter: hue-rotate(270deg);*/
+    position: relative;
+    min-height: 100vh;
+
+}
