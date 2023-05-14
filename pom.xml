@@ -4,6 +4,13 @@
   <artifactId>cs122b-project3-SAXParser-example</artifactId>
   <version>0.0.1-SNAPSHOT</version>
   <name>cs122b-project3-SAXParser-example</name>
+  <dependencies>
+    <dependency>
+      <groupId>mysql</groupId>
+      <artifactId>mysql-connector-java</artifactId>
+      <version>8.0.32</version>
+    </dependency>
+  </dependencies>
   <build>
     <plugins>
       <plugin>
