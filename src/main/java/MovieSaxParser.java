@@ -13,7 +13,6 @@ import org.xml.sax.helpers.DefaultHandler;
 import java.sql.*;
 
 
-
 public class MovieSaxParser extends DefaultHandler {
     String dbtype = "mysql";
     String dbname = "moviedb";
