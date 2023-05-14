@@ -55,7 +55,7 @@ public class GenreListServlet extends HttpServlet {
             // Declare our statement
             Statement statement = conn.createStatement();
 
-            String query = "select * \n" +
+            String query = "select DISTINCT * \n" +
                     "from genres\n" +
                     "order by name ASC;";
 

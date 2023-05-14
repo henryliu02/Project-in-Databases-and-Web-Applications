@@ -377,7 +377,7 @@ public class SearchServlet extends HttpServlet{
             // Get a connection from dataSource
 
             // Construct a query with parameter represented by "?"
-            String query = "SELECT r.movieId, m.title, m.year, m.director,\n" +
+            String query = "SELECT m.id, m.title, m.year, m.director,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres_id,\n" +
                     "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
@@ -385,11 +385,11 @@ public class SearchServlet extends HttpServlet{
                     "       ROUND(AVG(r.rating),2) AS rating\n" +
                     "FROM ratings AS r\n" +
                     "RIGHT JOIN movies AS m ON r.movieId = m.id\n" +
-                    "INNER JOIN stars_in_movies AS sim ON r.movieId = sim.movieId\n" +
-                    "INNER JOIN stars AS s ON sim.starId = s.id\n" +
-                    "INNER JOIN genres_in_movies AS gim ON r.movieId = gim.movieId\n" +
-                    "INNER JOIN genres AS g ON gim.genreId = g.id\n" +
-                    "INNER JOIN (\n" +
+                    "LEFT JOIN stars_in_movies AS sim ON m.id = sim.movieId\n" +
+                    "LEFT JOIN stars AS s ON sim.starId = s.id\n" +
+                    "LEFT JOIN genres_in_movies AS gim ON m.id = gim.movieId\n" +
+                    "LEFT JOIN genres AS g ON gim.genreId = g.id\n" +
+                    "LEFT JOIN (\n" +
                     "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
                     "    FROM stars_in_movies AS sim\n" +
                     "    GROUP BY sim.starId\n" +
@@ -402,9 +402,9 @@ public class SearchServlet extends HttpServlet{
                     "    SELECT 1\n" +
                     "    FROM stars AS s2\n" +
                     "    INNER JOIN stars_in_movies AS sim2 ON s2.id = sim2.starId\n" +
-                    "    WHERE s2.name LIKE CONCAT('%', COALESCE(NULLIF(?, ''), s2.name), '%') AND sim2.movieId = r.movieId\n" +
+                    "    WHERE s2.name LIKE CONCAT('%', COALESCE(NULLIF(?, ''), s2.name), '%') AND sim2.movieId = m.id\n" +
                     "))\n" +
-                    "GROUP BY r.movieId, m.title, m.year, m.director\n"+
+                    "GROUP BY m.id, m.title, m.year, m.director\n"+
                     sortQuery +
                     "    LIMIT ?\n" +
                     "    OFFSET ?;";
@@ -449,7 +449,7 @@ public class SearchServlet extends HttpServlet{
                 String movie_stars = rs.getString("stars");
                 String stars_id = rs.getString("stars_id");
                 String movie_rating = rs.getString("rating");
-                String movie_id = rs.getString("movieId");
+                String movie_id = rs.getString("id");
 
                 // Create a JsonObject based on the data we retrieve from rs
                 JsonObject jsonObject = new JsonObject();
