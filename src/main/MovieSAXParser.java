@@ -79,9 +79,12 @@ public class MovieSAXParser extends DefaultHandler {
                 }
             } else if (qName.equalsIgnoreCase("dirn")) {
                 tempMovie.setDirector(tempVal);
+            } else if (qName.equalsIgnoreCase("cat")) {
+                tempMovie.setGenre(tempVal);
             }
         }
     }
+
     public static void main(String[] args) {
         MovieSAXParser spe = new  MovieSAXParser();
         spe.runExample();

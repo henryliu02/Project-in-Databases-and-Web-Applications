@@ -31,6 +31,7 @@ public class StarSAXParser extends DefaultHandler {
         try {
             SAXParser sp = spf.newSAXParser();
             sp.parse("stanford-movies/actors63.xml", this);
+            sp.parse("stanford-movies/casts124.xml", this);
         } catch (SAXException se) {
             se.printStackTrace();
         } catch (ParserConfigurationException pce) {
@@ -51,7 +52,7 @@ public class StarSAXParser extends DefaultHandler {
     @Override
     public void startElement(String uri, String localName, String qName, Attributes attributes) throws SAXException {
         tempVal = "";
-        if (qName.equalsIgnoreCase("actor")) {
+        if (qName.equalsIgnoreCase("actor") || qName.equalsIgnoreCase("a")) {
             tempStar = new Star();
             tempStar.setId(attributes.getValue("id"));
         }
@@ -67,13 +68,14 @@ public class StarSAXParser extends DefaultHandler {
         if (tempStar != null) {
             if (qName.equalsIgnoreCase("actor")) {
                 stars.add(tempStar);
+                stars.add(tempStar);
             } else if (qName.equalsIgnoreCase("stagename")) {
                 tempStar.setName(tempVal);
             } else if (qName.equalsIgnoreCase("dob")) {
                 try {
                     tempStar.setBirthYear(Integer.parseInt(tempVal));
                 } catch (NumberFormatException e) {
-                    tempStar.setBirthYear(0);
+                    tempStar.setBirthYear(null);
                 }
             }
         }
@@ -82,5 +84,9 @@ public class StarSAXParser extends DefaultHandler {
     public static void main(String[] args) {
         StarSAXParser spe = new StarSAXParser();
         spe.runExample();
+
+
+
+
     }
 }

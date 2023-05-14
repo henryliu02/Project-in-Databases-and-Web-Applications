@@ -21,7 +21,7 @@ public class Movie {
         return year;
     }
 
-    public void setYear(int year) {
+    public void setYear(Integer year) {
         this.year = year;
     }
 
@@ -33,18 +33,30 @@ public class Movie {
         this.director = director;
     }
 
+    public String getGenre() {
+        return genre;
+    }
+
+    public void setGenre(String genre) {
+        this.genre = genre;
+    }
+
     private String id;
     private String title;
     private int year;
     private String director;
+    private String genre;
+
+
     public Movie(){
 
     }
-    public Movie(String id, String title, int year, String director) {
+    public Movie(String id, String title, int year, String director, String genre) {
         this.id = id;
         this.title = title;
         this.year = year;
         this.director = director;
+        this.genre = genre;
     }
     public String toString() {
         StringBuilder sb = new StringBuilder();
@@ -56,8 +68,9 @@ public class Movie {
         sb.append("Year: ").append(year);
         sb.append(", ");
         sb.append("Director: ").append(director);
+        sb.append(", ");
+        sb.append("Genre: ").append(genre);
         sb.append(".");
-
         return sb.toString();
     }
 }

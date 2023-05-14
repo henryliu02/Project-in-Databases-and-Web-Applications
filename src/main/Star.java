@@ -3,12 +3,12 @@ package main;
 public class Star {
     private String id;
     private String name;
-    private int birthYear;
+    private Integer birthYear;
     public Star(){
 
     }
 
-    public Star(String id, String name, int birthYear) {
+    public Star(String id, String name, Integer birthYear) {
         this.id = id;
         this.name = name;
         this.birthYear = birthYear;
@@ -34,7 +34,7 @@ public class Star {
         return birthYear;
     }
 
-    public void setBirthYear(int birthYear) {
+    public void setBirthYear(Integer birthYear) {
         this.birthYear = birthYear;
     }
     public String toString() {
