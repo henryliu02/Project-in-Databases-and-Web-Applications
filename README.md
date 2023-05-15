@@ -1,54 +1,53 @@
 
-DEMO URL LINK: https://youtu.be/ZiNw_DlSpkE
+DEMO URL LINK: https://youtu.be/qRmmTP04Oos
 
-WEBSITE LINK: http://ec2-18-204-215-238.compute-1.amazonaws.com:8080/cs122b-project2/login.html
+USER WEBSITE LINK: https://coolfablix.com:8443/cs122b-project3/login.html
 
+EMPLOYEE DASHBOARD WEBSITE LINK: https://coolfablix.com:8443/cs122b-project3/_dashboard/login.html
 
-Substring matching design: (used in searchSevlet, genreSevlet)
+<br>
+<br>
+<b>Disclaimer :</b>
+1. We've assigned an Elastic IP to our AWS Instance
+2. We've signed the purcurcased domain(coolfablix.com) from GoDaddy with the Let's Encrypt certification. 
+3. We tried numerous efforts to get the SSL working in server.xml from the Tomcat server(to recognize our cert) and am continuously working on it. 
+<br>
+<br>
 
-Used substring matching design for the searching and browsing feature: 
-
-Used "Like", "And" keywords for matching searching parameter: e.g. m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))
-
-Used REGEXP for matching * category movie title: e.g.  Subquery = " m.title NOT REGEXP '^[0-9a-zA-Z]'\n";
-
-
-### Features
-1. This example application allows you to login with the username and password provided above.
-2. When you land on the welcome page, it will show your current session ID and last access time. 
-3. It also simulates a shopping cart feature. When you type in items that you want to store in the current session and then click `add`, the web page will show a list of items that consist of your previous items, and the one you just added. When you refresh the page and add more items, the list that the web page shows will contain all the items that you have added to the list in this session. 
-
-### Brief Explanation
-
-- The default username is `anteater` and password is `123456` .
-
-- [login.html](WebContent/login.html) contains the login form. In the `form` tag with `id=login_form`, the action is disabled so that we can implement our own logic with the `submit` event. It also includes jQuery and `login.js`.
-
-
-- [login.js](WebContent/login.js) is responsible for submitting the form. 
-  - The statement `login_form.submit(submitLoginForm)` sets up an event listener for the form `submit` action and binds the action to the `submitLoginForm` function. 
-  - The `submitLoginForm` function disables the default form action and sends HTTP POST requests to the backend.
-  - The `handleLoginResult` function parses the JSON data that is sent from the backend. If login is successful, 'login.js' redirects to the 'index.html' page. If login fails, it shows appropriate error messages.
-
-
-- [LoginServlet.java](src/LoginServlet.java) handles the login requests. It contains the following functionalities:
-  - It gets the username and password from the parameters.
-  - It verifies the username and password.
-  - If login succeeds, it puts the `User` object in the session. Then it sends back a JSON response: `{"status": "success", "message": "success"}` .
-  - If login fails, the JSON response will be: `{"status": "fail", "message": "incorrect password"}` or `{"status": "fail", "message": "user <username> doesn't exist"}`.
-   
- 
-- [LoginFilter.java](src/LoginFilter.java) is a special `Filter` class. It serves the purpose that for each URL request, if the user is not logged in, then it redirects the user to the `login.html` page. 
-   - A `Filter` class intercepts all incoming requests and determines if such requests are allowed against the rules we implement. See more details about `Filter` class [here](http://tutorials.jenkov.com/java-servlets/servlet-filters.html).
-   - In `Filter`, all requests will pass through the `doFilter` function.
-   - `LoginFilter` first checks if the request is `login.html`, `login.js`, or `api/login`, which are the URL patterns we mapped to `LoginServlet.java` that are allowed to access without login.
-   - It then checks if the user has logged in to the current session. If so, it redirects the user to the requested URL and if otherwise,`login.html` .
+<b>Used three parsing time optimization strategies:</b>
+1. Batch Insertion for each table: Instead of performing individual database insertions for each data entry, batch insertion allows multiple insertions to be executed in a single database transaction. This strategy reduces the overhead of establishing multiple database connections and improves efficiency by minimizing the round trips between the application and the database. By grouping multiple insertions together, the parsing process becomes more efficient and faster. In particularly, we used btach insertion for all sql insertions from the parsed files. 
+3. In-memory hash tables for both data from current tables and data from parsed file. In particularly, we used hash and in-memory data structure  to store data loaded from mainxx.xml and pass to CastSaxparser as parameter, as well as stored data loaded from actorxx.xml to MovieSaxParser as parameter. 
+4. Achieved O(1) for each comparison and insertion. In particularly, we cached sql data from stars table to hashmap and genres table to hashmap, which achieved O(1) constant time comparsion to check duplicate insertions(also used IGNORE keyword)
+<br>
+  <br>
   
-- [IndexServlet.java](src/IndexServlet.java) enables you to see your current session information, last access time and a list of items that you added through a `form` in that session. The `IndexServlet.java` has two methods, `doPost` and `doGet`.
-  * The `doGET` method is invoked when you have HTTP GET requests through the api `/api/index`, which lands on `index.html` through `index.js`.
-    * It first gets the session ID, overrides the last access time, and writes these values in the JSON Object that is sent through `response`. 
-    * Next, `index.js` shows the content in the response by an `ajax` call through `jQuery`, which appears in `index.html`.
-  * The `doPOST` method is invoked with HTTP POST requests, and it is responsible for the item cart feature.    
-    * First, it gets the session ID and the list of items from the current session.
-    * If there is no such array of items, it will create an empty array and add the item that the user typed in.
-    * Otherwise, it creates an array and sends the list of items through `index.js`.
+<b>Inconsistency data:</b>
+ 1. MovieEmpty.txt  -- Defined as movies that exist in mainxx.xml but not in castxx.xml
+ 2. MoviesDuplicate.txt   -- Defined as movies that duplicate during parsing/insertion
+ 3. StarsNotFound.txt -- Defined as Stars exist in castxx.xml but not in actorsxx.xml
+ 4.  MovieNotFound.txt  -- Defined as movies that exist in castxx.xml but not in mainxx.xml
+ 5.  MoviesInconsistent.txt  -- Defined as movies that missing primiary key(id) or missing title or missing director or missing year (consistent with the employee insertion feature)
+ 6.  StarsDuplicate.txt   -- Defined as stars that duplicate during parsing/insertion
+ <br>
+ <b> If needing to see these text files and code for SaxParser, please go to our github branch saxparser to view:<br> https://github.com/UCI-Chenli-teaching/s23-122b-cool_team/tree/saxparser</b>
+ 
+ 
+ <br>
+  <br>
+<b>File Names with prepared statement:</b>
+  
+1. AddMovieServlet.java
+2. AddStarServlet.java
+3. GenreServlet.java
+4. LoginServlet.java
+5. PaymentServlet.java
+6. SearchServlet.java
+7. SingleMovieServlet.java
+8. SingleStarServlet.java
+
+<br>
+<br>
+<b>Stored procedure</b>
+  1. star_stored-procedure.sql - helper stored procedure for adding new stars.<br>
+  2. stored-procedure.sql - stored procedure required for adding new movies. 
+
