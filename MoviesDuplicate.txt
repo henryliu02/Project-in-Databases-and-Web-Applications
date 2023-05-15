@@ -1,0 +1,54 @@
+Duplicate movie: Movie Details - ID: CC80, Title: Limelight, Year: 1952, Director: Chaplin, Cats: [Dram].
+Duplicate movie: Movie Details - ID: ECn107, Title: Captain January, Year: 1924, Director: Cline, Cats: null.
+Duplicate movie: Movie Details - ID: JuD11, Title: La Fin de Jour, Year: 1939, Director: Duvivier, Cats: null.
+Duplicate movie: Movie Details - ID: FB21, Title: Liliom, Year: 1930, Director: Borzage, Cats: null.
+Duplicate movie: Movie Details - ID: GCt30, Title: The Rat, Year: 1927, Director: Cutts, Cats: null.
+Duplicate movie: Movie Details - ID: FNm10, Title: Doctor Jack, Year: 1922, Director: Newmeyer, Cats: [Comd].
+Duplicate movie: Movie Details - ID: RC5, Title: Two Timid Souls, Year: 1928, Director: Clair, Cats: null.
+Duplicate movie: Movie Details - ID: MLR6, Title: Five Star Final, Year: 1932, Director: M.LeRoy, Cats: null.
+Duplicate movie: Movie Details - ID: RdR38, Title: Upperworld, Year: 1934, Director: delRuth, Cats: null.
+Duplicate movie: Movie Details - ID: IAg10, Title: Send For Paul Temple, Year: 1931, Director: Argyle, Cats: null.
+Duplicate movie: Movie Details - ID: OP13, Title: Forever Amber, Year: 1947, Director: Preminger, Cats: [Dram].
+Duplicate movie: Movie Details - ID: GSt3, Title: The Nitwits, Year: 1935, Director: G.Stevens~sr., Cats: [Comd].
+Duplicate movie: Movie Details - ID: ChC5, Title: Against the Wind, Year: 1947, Director: Ch.Crichton, Cats: [Dram].
+Duplicate movie: Movie Details - ID: ChC12, Title: Law and Disorder, Year: 1958, Director: Ch.Crichton, Cats: null.
+Duplicate movie: Movie Details - ID: ChC15, Title: Wild Duck, Year: 1967, Director: Ch.Crichton, Cats: [Dram].
+Duplicate movie: Movie Details - ID: PaJ2, Title: Ferry Pilot, Year: 1941, Director: P.Jackson, Cats: [Docu, Dram].
+Duplicate movie: Movie Details - ID: FZ8, Title: The Men, Year: 1950, Director: Zinneman, Cats: [Dram, Docu].
+Duplicate movie: Movie Details - ID: MRs21, Title: Peyton Place, Year: 1958, Director: Robson, Cats: [Dram].
+Duplicate movie: Movie Details - ID: LAl4, Title: Those Endearing Young Charms, Year: 1946, Director: L.Allan, Cats: null.
+Duplicate movie: Movie Details - ID: CoB1, Title: The Seventh Veil, Year: 1945, Director: Bennett, Cats: null.
+Duplicate movie: Movie Details - ID: NR1, Title: They Live By Night, Year: 1947, Director: N.Ray, Cats: [Dram].
+Duplicate movie: Movie Details - ID: HyC10, Title: Last Holiday, Year: 1950, Director: Cass, Cats: [Dram, Romt].
+Duplicate movie: Movie Details - ID: JLT50, Title: Allan Quatermain and the Lost City of Gold, Year: 1986, Director: LeeThompson, Cats: [Advt].
+Duplicate movie: Movie Details - ID: JIv42, Title: The Remains of the Day, Year: 1993, Director: Ivory, Cats: [Dram].
+Duplicate movie: Movie Details - ID: SR45, Title: The Adversary, Year: 1971, Director: S.Ray, Cats: [Dram].
+Duplicate movie: Movie Details - ID: GeP15, Title: Murder Most Foul, Year: 1964, Director: Pollock, Cats: [Myst].
+Duplicate movie: Movie Details - ID: ArH205, Title: The Klansmen, Year: 1968, Director: Hiller, Cats: [Dram].
+Duplicate movie: Movie Details - ID: MBo12, Title: The Legend of Aneus, Year: 1962, Director: Bonnard, Cats: [Hist].
+Duplicate movie: Movie Details - ID: GxR10, Title: , Year: 1954, Director: G.Reinhardt, Cats: null.
+Duplicate movie: Movie Details - ID: GxR10, Title: , Year: 1954, Director: G.Reinhardt, Cats: null.
+Duplicate movie: Movie Details - ID: JaS13, Title: The Dark Pool, Year: 1963, Director: Smight, Cats: [Susp].
+Duplicate movie: Movie Details - ID: KRu25, Title: Rainbow, Year: 1989, Director: K.Russell, Cats: [Dram].
+Duplicate movie: Movie Details - ID: MAp43, Title: Moving the Mountain, Year: 1994, Director: Apted, Cats: [Docu].
+Duplicate movie: Movie Details - ID: FrW10, Title: Titicut Follies, Year: 1967, Director: Wiseman, Cats: [Docu].
+Duplicate movie: Movie Details - ID: JRl10, Title: Virgins and Vampires, Year: 1972, Director: Rollin, Cats: [Porn].
+Duplicate movie: Movie Details - ID: PDu10, Title: Experience Preferred...But Not Essential, Year: 1971, Director: M.Laughlin, Cats: [Actn].
+Duplicate movie: Movie Details - ID: MeW10, Title: Daughter of Frankenstein, Year: 1972, Director: M.Welles, Cats: null.
+Duplicate movie: Movie Details - ID: JKp35, Title: Brokedown Palace, Year: 1999, Director: J.Kaplan, Cats: [Susp].
+Duplicate movie: Movie Details - ID: GeM17, Title: Lorenzo's Oil, Year: 1992, Director: Geo.Miller, Cats: [Docu, Susp, Dram].
+Duplicate movie: Movie Details - ID: MxS10, Title: Tales from the Vienna Woods, Year: 1979, Director: Schell, Cats: [Dram].
+Duplicate movie: Movie Details - ID: NiM30, Title: Star Trek, Generations, Year: 1994, Director: N.Meyer, Cats: [ScFi].
+Duplicate movie: Movie Details - ID: DDo15, Title: Keiner liebt mich, Year: 1990, Director: Dorrie, Cats: null.
+Duplicate movie: Movie Details - ID: FOR12, Title: Scream Queen Hot Tub Party, Year: 1984, Director: F.O.Ray, Cats: [Porn].
+Duplicate movie: Movie Details - ID: PAl4, Title: Matador, Year: 1985, Director: Almodovar, Cats: [Comd].
+Duplicate movie: Movie Details - ID: BLe5, Title: Tin Men, Year: 1987, Director: B.Levinson, Cats: [Comd].
+Duplicate movie: Movie Details - ID: KaK10, Title: Another Way, Year: 1982, Director: Makk, Cats: [Susp].
+Duplicate movie: Movie Details - ID: LeN10, Title: The Good Mother, Year: 1988, Director: Nimoy, Cats: null.
+Duplicate movie: Movie Details - ID: AKo15, Title: The Inner Circle, Year: 1992, Director: Konchalovsky, Cats: [Epic].
+Duplicate movie: Movie Details - ID: ThS5, Title: Kingfish: A Story of Huey P. Long, Year: 1995, Director: Schlamme, Cats: [BioP].
+Duplicate movie: Movie Details - ID: AnL15, Title: Crouching Tiger, Hidden Dragon, Year: 2000, Director: A..Lee, Cats: [Romt Actn].
+Duplicate movie: Movie Details - ID: MiM10, Title: I Got the Hook-Up, Year: 1998, Director: M.Martin, Cats: [Comd].
+Duplicate movie: Movie Details - ID: NtB10, Title: On the Ropes, Year: 1999, Director: Brett Morgen, Cats: [Docu].
+Duplicate movie: Movie Details - ID: PSv10, Title: Metroland, Year: 1999, Director: P.Saville, Cats: null.
+Duplicate movie: Movie Details - ID: SfG1, Title: Lost in Translation, Year: 2003, Director: Sofia~Coppola, Cats: [Romt].
