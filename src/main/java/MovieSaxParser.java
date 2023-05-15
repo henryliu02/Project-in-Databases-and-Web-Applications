@@ -35,6 +35,8 @@ public class MovieSaxParser extends DefaultHandler {
     private  Integer inconsistent;
     private Map<String, Integer> genreIdCache;
 
+    private Map<String, String> starsCache = new HashMap<>();
+
     private int moviesInserted;
     private int genresInserted;
 
@@ -307,6 +309,7 @@ public class MovieSaxParser extends DefaultHandler {
 //                System.out.println(uniqueStarId + " " + star.getName() + " " + star.getBirthYear());
                 pstmt.setString(1, uniqueStarId);
                 pstmt.setString(2, star.getName());
+                starsCache.put(star.getName(), uniqueStarId); // Update the cache
                 if (star.getBirthYear() == 0) {
                     pstmt.setNull(3, Types.INTEGER);
                 } else {
@@ -345,19 +348,16 @@ public class MovieSaxParser extends DefaultHandler {
         return maxId;
     }
 
-    private String getStarIdByName(String starName) {
-        String starId = null;
-        String query = "SELECT id FROM stars WHERE name = ?";
-        try (PreparedStatement pstmt = connection.prepareStatement(query)) {
-            pstmt.setString(1, starName);
-            ResultSet rs = pstmt.executeQuery();
-            if (rs.next()) {
-                starId = rs.getString(1);
+    private void populateStarsCache() {
+        String query = "SELECT id, name FROM stars";
+        try (Statement stmt = connection.createStatement()) {
+            ResultSet rs = stmt.executeQuery(query);
+            while (rs.next()) {
+                starsCache.put(rs.getString("name"), rs.getString("id"));
             }
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return starId;
     }
 
     private void processBatch() {
@@ -373,11 +373,9 @@ public class MovieSaxParser extends DefaultHandler {
 
         try (PreparedStatement pstmt = connection.prepareStatement(insertRelationshipSQL)) {
             for (Star star : stars) {
-                String starId = getStarIdByName(star.getName());
-                int newId = getMaxStarId() + 1;
+                String starId = starsCache.get(star.getName());
                 if (starId == null) {
-                    String uniqueStarId = "nw" + String.format("%07d", newId);
-                    starId = uniqueStarId;
+                    continue;
                 }
                 for (String movieId : star.getMovieIds()) {
                     pstmt.setString(1, starId);
@@ -401,6 +399,7 @@ public class MovieSaxParser extends DefaultHandler {
 
         return relationshipsInserted;
     }
+
 
     private void insertNewMovies(Set<Movie> movies) {
         String insertMovieSQL = "INSERT IGNORE INTO movies (id, title, year, director) VALUES (?, ?, 0, ?)";
@@ -433,6 +432,7 @@ public class MovieSaxParser extends DefaultHandler {
         MovieSaxParser movieParser = new MovieSaxParser();
         // Populate genreIdCache before inserting any data
         movieParser.populateGenreIdCache();
+        movieParser.populateStarsCache();
         movieParser.runExample();
         Set<Movie> parsedMovies = new HashSet<>(movieParser.myMovies);
 
