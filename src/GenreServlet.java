@@ -90,6 +90,7 @@ public class GenreServlet extends HttpServlet {
 
         // check if should find all title starts with non alphanumeric characters
         String title_match_query = "               AND title LIKE CONCAT(COALESCE(NULLIF(?, ''), title), '%'))\n";
+
         Boolean special_title = false;
         if ("*".equals(title))
         {

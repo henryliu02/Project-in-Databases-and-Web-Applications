@@ -40,10 +40,16 @@
                 <li class="nav-item">
                     <a class="nav-link" href="top20.html">Top20</a>
                 </li>
-                <li class="nav-item">
-                    <a class="nav-link" href="#">About</a>
-                </li>
             </ul>
+            <form class="form-inline my-2 my-lg-0" id="fulltext_search" action="genre.html" method="get">
+                <input type="text" name="title_" id="autocomplete"
+                       class="autocomplete-searchbox form-control"
+                       placeholder="Full Text Search"/>
+                <input type="hidden" name="year" value="">
+                <input type="hidden" name="director" value="">
+                <input type="hidden" name="star" value="">
+                <button id="search" class="btn hover-effect-button btn-outline-success my-2 my-sm-0 mr-2" type="submit">Search</button>
+            </form>
             <form class="form-inline my-2 my-lg-0" id="search_form" action="genre.html" method="get">
                 <div class="input-group mr-2">
                     <input type="text" class="form-control" name="title_" aria-label="Title Search" placeholder="Search by title">
@@ -91,8 +97,11 @@
     Your browser does not support the audio element.
 </audio>
 
+
 <!-- Load jQuery and Bootstrap JS -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+<script src="https://code.jquery.com/jquery-3.6.4.min.js"></script>
+<!-- include jquery autocomplete JS  -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.devbridge-autocomplete/1.4.11/jquery.autocomplete.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.12.9/umd/popper.min.js"></script>
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/js/bootstrap.min.js"></script>
 

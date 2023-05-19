@@ -5,6 +5,23 @@ h1 {
     font-size: 200%;
 }
 
+.autocomplete-suggestions { border: 1px solid #999; background: #FFF; overflow: auto; }
+.autocomplete-suggestion { padding: 2px 5px; white-space: nowrap; overflow: hidden; font-size: 8px; }
+.autocomplete-selected { background: #F0F0F0; }
+.autocomplete-suggestions strong { font-weight: normal; color: indigo; }
+.autocomplete-group { padding: 2px 5px; }
+.autocomplete-group strong { display: block; border-bottom: 1px solid #000; }
+
+
+#autocomplete {
+    font-size: 10px;
+}
+
+.autocomplete-searchbox {
+    height: 35px;
+    width: 150px;
+}
+
 .navbar-brand{
     font-family: 'Pacifico', cursive;
 }
@@ -65,6 +82,14 @@ div.linkedin{
     border-color: transparent;
     color: white;
     font-size: 14px;
+}
+
+#search{
+    background-color: black;
+    border-color: transparent;
+    color: white;
+    font-size: 14px;
+    /*width: 80px;*/
 }
 
 #cart-btn {

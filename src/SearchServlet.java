@@ -360,7 +360,11 @@ public class SearchServlet extends HttpServlet{
 
 
         // check if should find all title starts with non alphanumeric characters
-        String title_match_query = " (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n";
+//        String title_match_query = " (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n";
+        String title_match_query = "IF(? = '' OR ? IS NULL,\n" +
+                "     1,   -- True condition: if ? is empty or null, return all rows\n" +
+                "     MATCH (m.title) AGAINST (?) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
+                "  )\n";
         Boolean special_title = false;
         if ("*".equals(title))
         {
@@ -394,7 +398,7 @@ public class SearchServlet extends HttpServlet{
                     "    FROM stars_in_movies AS sim\n" +
                     "    GROUP BY sim.starId\n" +
                     ") AS mdb ON s.id = mdb.starId\n" +
-                    "WHERE" +
+                    "WHERE " +
                         title_match_query +
                     "  AND m.year = COALESCE(NULLIF(?, ''), m.year)\n" +
                     "  AND (m.director LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.director), '%'))\n" +
@@ -418,12 +422,14 @@ public class SearchServlet extends HttpServlet{
             // num 1 indicates the first "?" in the query
             if(!special_title) {
                 statement.setString(1, title);
-                statement.setString(2, year);
-                statement.setString(3, director);
-                statement.setString(4, star);
-                statement.setString(5, star);
-                statement.setInt(6, numResultsPerPage);
-                statement.setInt(7, offset);
+                statement.setString(2, title);
+                statement.setString(3, title);
+                statement.setString(4, year);
+                statement.setString(5, director);
+                statement.setString(6, star);
+                statement.setString(7, star);
+                statement.setInt(8, numResultsPerPage);
+                statement.setInt(9, offset);
             }
             else {
                 statement.setString(1, year);
