@@ -14,6 +14,8 @@ import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
 import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
+import org.json.JSONException;
+import org.json.JSONObject;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +31,7 @@ public class LoginActivity extends AppCompatActivity {
      */
     private final String host = "10.0.2.2";
     private final String port = "8080";
-    private final String domain = "cs122b_project2_login_cart_example_war";
+    private final String domain = "cs122b_project4_war";
     private final String baseURL = "http://" + host + ":" + port + "/" + domain;
 
     @Override
@@ -59,15 +61,22 @@ public class LoginActivity extends AppCompatActivity {
                 Request.Method.POST,
                 baseURL + "/api/login",
                 response -> {
-                    // TODO: should parse the json response to redirect to appropriate functions
-                    //  upon different response value.
-                    Log.d("login.success", response);
-                    //Complete and destroy login activity once successful
-                    finish();
-                    // initialize the activity(page)/destination
-                    Intent MovieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                    // activate the list page.
-                    startActivity(MovieListPage);
+                    try {
+                    JSONObject jsonResponse = new JSONObject(response);
+                    String status = jsonResponse.optString("status");
+
+                    if (status.equals("success")) {
+                        Log.d("login.success", response);
+                        finish();
+                        Intent movieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
+                        startActivity(movieListPage);
+                    } else {
+                        String message = jsonResponse.optString("message");
+                        Log.d("login.error", message);
+                    }
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
                 },
                 error -> {
                     // error
