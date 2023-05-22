@@ -15,6 +15,10 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -361,10 +365,21 @@ public class SearchServlet extends HttpServlet{
 
         // check if should find all title starts with non alphanumeric characters
 //        String title_match_query = " (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n";
-        String title_match_query = "IF(? = '' OR ? IS NULL,\n" +
-                "     1,   -- True condition: if ? is empty or null, return all rows\n" +
-                "     MATCH (m.title) AGAINST (?) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
-                "  )\n";
+//        String title_match_query = "IF(? = '' OR ? IS NULL,\n" +
+//                "     1,   -- True condition: if ? is empty or null, return all rows\n" +
+//                "     MATCH (m.title) AGAINST (?) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
+//                "  )\n";
+
+        List<String> tokens = Arrays.asList(title.split(" "));
+        List<String> tokensWithWildcard = tokens.stream().map(token -> "+" + token + "*").collect(Collectors.toList());
+        String joinedTokens = String.join(" ", tokensWithWildcard);
+
+// your SQL query
+        String title_match_query =
+                "IF(? = '' OR ? IS NULL,\n" +
+                        "     1,   -- True condition: if ? is empty or null, return all rows\n" +
+                        "     MATCH (m.title) AGAINST (? IN BOOLEAN MODE) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
+                        "  )\n";
         Boolean special_title = false;
         if ("*".equals(title))
         {
@@ -421,9 +436,10 @@ public class SearchServlet extends HttpServlet{
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             if(!special_title) {
-                statement.setString(1, title);
-                statement.setString(2, title);
-                statement.setString(3, title);
+                statement.setString(1, joinedTokens);
+                statement.setString(2, joinedTokens);
+
+                statement.setString(3, joinedTokens);
                 statement.setString(4, year);
                 statement.setString(5, director);
                 statement.setString(6, star);
