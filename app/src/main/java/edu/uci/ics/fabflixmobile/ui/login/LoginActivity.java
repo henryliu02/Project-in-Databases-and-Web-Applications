@@ -13,6 +13,7 @@ import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
 import edu.uci.ics.fabflixmobile.databinding.ActivityLoginBinding;
+import edu.uci.ics.fabflixmobile.ui.mainpage.MainPageActivity;
 import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -68,8 +69,8 @@ public class LoginActivity extends AppCompatActivity {
                     if (status.equals("success")) {
                         Log.d("login.success", response);
                         finish();
-                        Intent movieListPage = new Intent(LoginActivity.this, MovieListActivity.class);
-                        startActivity(movieListPage);
+                        Intent mainPage = new Intent(getApplicationContext(), MainPageActivity.class);
+                        startActivity(mainPage);
                     } else {
                         String message = jsonResponse.optString("message");
                         Log.d("login.error", message);
