@@ -22,6 +22,8 @@
             </intent-filter>
         </activity>
         <activity android:name=".ui.mainpage.MainPageActivity" />
+        <activity android:name=".ui.singlemovie.SingleMovieActivity" />
+        SingleMovieActivity
     </application>
 
 </manifest>
