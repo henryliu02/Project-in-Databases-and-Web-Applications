@@ -1,7 +1,9 @@
 package edu.uci.ics.fabflixmobile.ui.mainpage;
 
 import android.annotation.SuppressLint;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
@@ -10,12 +12,17 @@ import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.toolbox.StringRequest;
 import edu.uci.ics.fabflixmobile.data.NetworkManager;
+import edu.uci.ics.fabflixmobile.data.model.Movie;
 import edu.uci.ics.fabflixmobile.databinding.ActivityMainpageBinding;
+import edu.uci.ics.fabflixmobile.ui.movielist.MovieListActivity;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.ArrayList;
+
 public class MainPageActivity extends AppCompatActivity {
+    private ArrayList<Movie> movieList = new ArrayList<>();
     private EditText title;
     private final String host = "10.0.2.2";
     private final String port = "8080";
@@ -57,12 +64,16 @@ public class MainPageActivity extends AppCompatActivity {
                             String movieYear = movieTitleAndYear.substring(movieTitleAndYear.lastIndexOf("(") + 1, movieTitleAndYear.lastIndexOf(")"));
                             // get the movie id from the "movieID" field under the "data" field
                             String movieId = jsonObject.getJSONObject("data").getString("movieID");
-                            Log.d("Movie Info", "Movie Title: " + movieTitleRes);
-                            Log.d("Movie Info", "Movie ID: " + movieId);
-                            Log.d("Movie Info", "Movie Year: " + movieYear);
+                            movieList.add(new Movie(movieTitleRes, Short.parseShort(movieYear)));
+//                            Log.d("Movie Info", "Movie Title: " + movieTitleRes);
+//                            Log.d("Movie Info", "Movie ID: " + movieId);
+//                            Log.d("Movie Info", "Movie Year: " + movieYear);
                         }
 
                         // Handle the search results as needed
+                        Intent intent = new Intent(MainPageActivity.this, MovieListActivity.class);
+                        intent.putParcelableArrayListExtra("movieList", movieList);
+                        startActivity(intent);
 
                     } catch (JSONException e) {
                         e.printStackTrace();
