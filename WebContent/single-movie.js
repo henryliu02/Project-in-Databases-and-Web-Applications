@@ -151,11 +151,19 @@ jQuery.ajax({
 });
 
 
+
 function handleLookup(query, doneCallback) {
     console.log("autocomplete initiated")
-    console.log("sending AJAX request to backend Java Servlet")
 
     // TODO: if you want to check past query results first, you can do it here
+
+    // check past query results first
+    let cachedData = localStorage.getItem(query);
+    if (cachedData) {
+        console.log("Using cached data");
+        handleLookupAjaxSuccess(JSON.parse(cachedData), query, doneCallback);
+        return;
+    }
 
     // sending the HTTP GET request to the Java Servlet endpoint hero-suggestion
     // with the query data
@@ -166,7 +174,9 @@ function handleLookup(query, doneCallback) {
         "url": "api/ft_search?title=" + escape(query),
         "success": function(data) {
             // pass the data, query, and doneCallback function into the success handler
-            console.log("data: ", data)
+            console.log("sending AJAX request to backend Java Servlet")
+            // Store to cache
+            localStorage.setItem(query, JSON.stringify(data));
             handleLookupAjaxSuccess(data, query, doneCallback)
         },
         "error": function(errorData) {
