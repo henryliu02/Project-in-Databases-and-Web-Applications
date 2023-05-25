@@ -16,7 +16,9 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.util.Arrays;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import jakarta.servlet.http.HttpServlet;
@@ -31,6 +33,7 @@ public class SearchServlet extends HttpServlet{
 
     // create a database which is registered in web.xml
     private DataSource dataSource;
+    private Set<String> stopwords;
 
     public void init(ServletConfig config)  {
         try{
@@ -38,6 +41,12 @@ public class SearchServlet extends HttpServlet{
         }catch (NamingException e){
             e.printStackTrace();
         }
+         stopwords = new HashSet<>(Arrays.asList(
+                 "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en",
+                 "for", "from", "how", "i", "in", "is", "it", "la", "of", "on", "or",
+                 "that", "the", "this", "to", "was", "what", "when", "where", "who",
+                 "will", "with", "und", "the", "www"
+        ));
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
@@ -324,16 +333,16 @@ public class SearchServlet extends HttpServlet{
         String sortQuery = "";
         switch(sortOption) {
             case "1":
-                sortQuery += "ORDER BY m.title DESC, rating DESC\n";
-                break;
-            case "2":
-                sortQuery += "ORDER BY m.title DESC, rating ASC\n";
-                break;
-            case "3":
                 sortQuery += "ORDER BY m.title ASC, rating DESC\n";
                 break;
-            case "4":
+            case "2":
                 sortQuery += "ORDER BY m.title ASC, rating ASC\n";
+                break;
+            case "3":
+                sortQuery += "ORDER BY m.title DESC, rating DESC\n";
+                break;
+            case "4":
+                sortQuery += "ORDER BY m.title DESC, rating ASC\n";
                 break;
             case "5":
                 sortQuery += "ORDER BY rating DESC, m.title DESC\n";
@@ -370,9 +379,15 @@ public class SearchServlet extends HttpServlet{
 //                "     MATCH (m.title) AGAINST (?) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
 //                "  )\n";
 
-        List<String> tokens = Arrays.asList(title.split(" "));
-        List<String> tokensWithWildcard = tokens.stream().map(token -> "+" + token + "*").collect(Collectors.toList());
-        String joinedTokens = String.join(" ", tokensWithWildcard);
+        String joinedTokens = "";
+        if (title != null && !title.equals("")) {
+            List<String> tokens = Arrays.asList(title.split(" "));
+            tokens = tokens.stream().filter(token -> !stopwords.contains(token.toLowerCase())).collect(Collectors.toList());
+            List<String> tokensWithWildcard = tokens.stream().map(token -> "+" + token + "*").collect(Collectors.toList());
+            joinedTokens = String.join(" ", tokensWithWildcard);
+            System.out.println(joinedTokens);
+        }
+
 
 // your SQL query
         String title_match_query =
