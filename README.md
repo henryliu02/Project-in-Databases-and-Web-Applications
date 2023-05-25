@@ -1,9 +1,9 @@
 
 DEMO URL LINK: https://youtu.be/qRmmTP04Oos
 
-USER WEBSITE LINK: https://coolfablix.com:8443/cs122b-project3/login.html
+USER WEBSITE LINK: https://coolfablix.com/cs122b-project3/login.html
 
-EMPLOYEE DASHBOARD WEBSITE LINK: https://coolfablix.com:8443/cs122b-project3/_dashboard/login.html
+EMPLOYEE DASHBOARD WEBSITE LINK: https://coolfablix.com/cs122b-project3/_dashboard/login.html
 
 <br>
 <br>
