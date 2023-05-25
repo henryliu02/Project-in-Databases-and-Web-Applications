@@ -15,6 +15,9 @@ import java.io.PrintWriter;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.util.*;
+import java.util.stream.Collectors;
+
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -27,6 +30,7 @@ public class FullTextSearchServlet extends HttpServlet{
 
     // create a database which is registered in web.xml
     private DataSource dataSource;
+    private Set<String> stopwords;
 
     public void init(ServletConfig config)  {
         try{
@@ -34,6 +38,12 @@ public class FullTextSearchServlet extends HttpServlet{
         }catch (NamingException e){
             e.printStackTrace();
         }
+        stopwords = new HashSet<>(Arrays.asList(
+                "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en",
+                "for", "from", "how", "i", "in", "is", "it", "la", "of", "on", "or",
+                "that", "the", "this", "to", "was", "what", "when", "where", "who",
+                "will", "with", "und", "the", "www"
+        ));
     }
 
     private static JsonObject generateJsonObject(String movieID, String movieTitle) {
@@ -154,8 +164,19 @@ public class FullTextSearchServlet extends HttpServlet{
 
 
 
-        // check if should find all title starts with non alphanumeric characters
-        String title_match_query = "MATCH (m.title) AGAINST (?)\n";
+        List<String> tokens = Arrays.asList(title.split(" "));
+        tokens = tokens.stream().filter(token -> !stopwords.contains(token.toLowerCase())).collect(Collectors.toList());
+        List<String> tokensWithWildcard = tokens.stream().map(token -> "+" + token + "*").collect(Collectors.toList());
+        String joinedTokens = String.join(" ", tokensWithWildcard);
+
+        System.out.println(joinedTokens);
+
+// your SQL query
+        String title_match_query =
+                "IF(? = '' OR ? IS NULL,\n" +
+                        "     1,   -- True condition: if ? is empty or null, return all rows\n" +
+                        "     MATCH (m.title) AGAINST (? IN BOOLEAN MODE) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
+                        "  )\n";
         Boolean special_title = false;
         if ("*".equals(title))
         {
@@ -177,9 +198,11 @@ public class FullTextSearchServlet extends HttpServlet{
                     "FROM movies AS m\n" +
                     "WHERE " +
                     title_match_query +
-                    "GROUP BY m.id, m.title, m.year, m.director\n"+
-                    "    LIMIT ?\n" +
-                    "    OFFSET ?;";
+                    "GROUP BY m.id, m.title, m.year, m.director\n"
+            +
+                    " ORDER BY m.title\n" +
+                    "    LIMIT 10;";
+//                    "    OFFSET ?;";
 
 
 
@@ -189,13 +212,15 @@ public class FullTextSearchServlet extends HttpServlet{
             // Set the parameter represented by "?" in the query to the id we get from url,
             // num 1 indicates the first "?" in the query
             if(!special_title) {
-                statement.setString(1, title);
-                statement.setInt(2, numResultsPerPage);
-                statement.setInt(3, offset);
+                statement.setString(1, joinedTokens);
+                statement.setString(2, joinedTokens);
+                statement.setString(3, joinedTokens);
+//                statement.setInt(4, numResultsPerPage);
+//                statement.setInt(5, offset);
             }
             else {
-                statement.setInt(1, numResultsPerPage);
-                statement.setInt(2, offset);
+//                statement.setInt(1, numResultsPerPage);
+//                statement.setInt(2, offset);
             }
 
             // Perform the query
