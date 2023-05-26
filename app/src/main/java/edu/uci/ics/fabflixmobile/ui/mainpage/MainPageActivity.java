@@ -24,10 +24,10 @@ import java.util.ArrayList;
 public class MainPageActivity extends AppCompatActivity {
     private ArrayList<Movie> movieList = new ArrayList<>();
     private EditText title;
-    private final String host = "10.0.2.2";
-    private final String port = "8080";
-    private final String domain = "cs122b_project4_war";
-    private final String baseURL = "http://" + host + ":" + port + "/" + domain;
+    private final String host = "coolfablix.com";
+    private final String port = "8443";
+    private final String domain = "cs122b-project4";
+    private final String baseURL = "https://" + host + ":" + port + "/" + domain;
 
 
     @Override
