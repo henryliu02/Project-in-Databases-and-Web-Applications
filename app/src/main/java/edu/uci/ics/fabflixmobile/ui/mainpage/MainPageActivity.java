@@ -49,25 +49,25 @@ public class MainPageActivity extends AppCompatActivity {
         String movieTitle = title.getText().toString();
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.GET,
-                baseURL + "/api/ft_search?title=" + movieTitle,
+                baseURL + "/api/search?title=" + movieTitle,
                 response -> {
                     try {
                         JSONArray jsonArray = new JSONArray(response);
                         // Print the search results
                         for (int i = 0; i < jsonArray.length(); i++) {
                             JSONObject jsonObject = jsonArray.getJSONObject(i);
-                         //   String movieTitleRes = jsonObject.optString("movie_title");
-                         //   String movieID = jsonObject.optString("movie_id");
-                          //  String movieYear = jsonObject.optString("movie_year");
-                            String movieTitleAndYear = jsonObject.getString("value");
-                            String movieTitleRes = movieTitleAndYear.substring(0, movieTitleAndYear.lastIndexOf("("));
-                            String movieYear = movieTitleAndYear.substring(movieTitleAndYear.lastIndexOf("(") + 1, movieTitleAndYear.lastIndexOf(")"));
-                            // get the movie id from the "movieID" field under the "data" field
-                            String movieId = jsonObject.getJSONObject("data").getString("movieID");
-                            movieList.add(new Movie(movieTitleRes, Short.parseShort(movieYear)));
-//                            Log.d("Movie Info", "Movie Title: " + movieTitleRes);
-//                            Log.d("Movie Info", "Movie ID: " + movieId);
-//                            Log.d("Movie Info", "Movie Year: " + movieYear);
+
+                            String movieTitleRes = jsonObject.getString("movie_title");
+                            String movieId = jsonObject.getString("movie_id");
+                            String movieYear = jsonObject.getString("movie_year");
+                            String movieDirector = jsonObject.getString("movie_director");
+                            String movieGenres = jsonObject.getString("movie_genres");
+                            String genresId = jsonObject.getString("genres_id");
+                            String movieStars = jsonObject.getString("movie_stars");
+                            String starsId = jsonObject.getString("stars_id");
+                            String movieRating = jsonObject.getString("movie_rating");
+
+                            movieList.add(new Movie(movieTitleRes, movieId, Short.parseShort(movieYear), movieDirector, movieGenres, movieStars, movieRating));
                         }
 
                         // Handle the search results as needed
@@ -85,7 +85,7 @@ public class MainPageActivity extends AppCompatActivity {
                 }
         );
 
-        // Add the search request to the network queue
+        // Add the request to the RequestQueue
         queue.add(searchRequest);
     }
 }

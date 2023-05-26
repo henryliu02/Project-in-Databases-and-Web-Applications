@@ -27,9 +27,20 @@ public class SingleMovieActivity extends AppCompatActivity {
 
         // Display the movie details
         TextView title = findViewById(R.id.title);
-        TextView subtitle = findViewById(R.id.subtitle);
-        title.setText(movie.getName());
-        subtitle.setText(String.valueOf(movie.getYear()));
+        TextView year = findViewById(R.id.year);
+        TextView stars = findViewById(R.id.stars);
+        TextView genres = findViewById(R.id.genres);
+        TextView director = findViewById(R.id.director);
+        TextView rating = findViewById(R.id.rating);
+
+// Set movie data to the TextViews
+        title.setText(movie.getTitle());
+        year.setText("Year: " + String.valueOf(movie.getYear()));
+        stars.setText("Stars: " + movie.getStars());
+        genres.setText("Genres: " + movie.getGenres());
+        director.setText("Director: " + movie.getDirector());
+        rating.setText("Rating: " + String.valueOf(movie.getRating()));
+
     }
 
 
