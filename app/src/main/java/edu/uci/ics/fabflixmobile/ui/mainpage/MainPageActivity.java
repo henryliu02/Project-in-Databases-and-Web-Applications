@@ -45,6 +45,7 @@ public class MainPageActivity extends AppCompatActivity {
 
     @SuppressLint("SetTextI18n")
     private void search() {
+        movieList.clear();
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         String movieTitle = title.getText().toString();
         final StringRequest searchRequest = new StringRequest(
