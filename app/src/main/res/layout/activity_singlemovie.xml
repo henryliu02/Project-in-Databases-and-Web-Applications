@@ -21,9 +21,9 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@android:color/holo_purple"
+                android:background="#6200ed"
                 android:textColor="@android:color/black"
-                android:textSize="20sp" />
+                android:textSize="25sp" />
 
         <TextView
                 android:id="@+id/year"
@@ -57,7 +57,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0dp"
                 android:layout_weight="1"
-                android:background="@android:color/darker_gray"
+                android:background="@android:color/white"
                 android:textColor="@android:color/black"
                 android:textSize="20sp" />
 
