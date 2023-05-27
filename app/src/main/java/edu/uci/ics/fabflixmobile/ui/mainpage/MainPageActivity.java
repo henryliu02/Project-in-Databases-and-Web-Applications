@@ -39,18 +39,19 @@ public class MainPageActivity extends AppCompatActivity {
         setContentView(binding.getRoot());
         title = binding.movietitle;
         final Button searchButton = binding.search;
+        int page = getIntent().getIntExtra("page", 1);  // Get the page from the intent (default to 1 if it's not there)
         //assign a listener to call a function to handle the user request when clicking a button
-        searchButton.setOnClickListener(view -> search());
+        searchButton.setOnClickListener(view -> search(page));
     }
 
     @SuppressLint("SetTextI18n")
-    private void search() {
+    private void search(int page) {
         movieList.clear();
         final RequestQueue queue = NetworkManager.sharedManager(this).queue;
         String movieTitle = title.getText().toString();
         final StringRequest searchRequest = new StringRequest(
                 Request.Method.GET,
-                baseURL + "/api/search?title=" + movieTitle,
+                baseURL + "/api/search?title=" + movieTitle + "&page=" + page,
                 response -> {
                     try {
                         JSONArray jsonArray = new JSONArray(response);
@@ -74,6 +75,7 @@ public class MainPageActivity extends AppCompatActivity {
                         // Handle the search results as needed
                         Intent intent = new Intent(MainPageActivity.this, MovieListActivity.class);
                         intent.putParcelableArrayListExtra("movieList", movieList);
+                        intent.putExtra("movieTitle", movieTitle);
                         startActivity(intent);
 
                     } catch (JSONException e) {

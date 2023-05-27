@@ -72,8 +72,9 @@ public class LoginActivity extends AppCompatActivity {
                         Intent mainPage = new Intent(getApplicationContext(), MainPageActivity.class);
                         startActivity(mainPage);
                     } else {
-                        String message = jsonResponse.optString("message");
-                        Log.d("login.error", message);
+                        String msg = jsonResponse.optString("message");
+                        Log.d("login.error", msg);
+                        message.setText(msg); // setting the error message
                     }
                 } catch (JSONException e) {
                     e.printStackTrace();
@@ -82,6 +83,7 @@ public class LoginActivity extends AppCompatActivity {
                 error -> {
                     // error
                     Log.d("login.error", error.toString());
+                    message.setText("Network error. Please try again.");
                 }) {
             @Override
             protected Map<String, String> getParams() {
