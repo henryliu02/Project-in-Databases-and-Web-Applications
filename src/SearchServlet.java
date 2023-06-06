@@ -10,6 +10,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -37,11 +39,16 @@ public class SearchServlet extends HttpServlet{
 
     public void init(ServletConfig config)  {
         try{
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            super.init(config);
+//            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbSlave");
+
         }catch (NamingException e){
             e.printStackTrace();
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
         }
-         stopwords = new HashSet<>(Arrays.asList(
+        stopwords = new HashSet<>(Arrays.asList(
                  "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en",
                  "for", "from", "how", "i", "in", "is", "it", "la", "of", "on", "or",
                  "that", "the", "this", "to", "was", "what", "when", "where", "who",
@@ -50,6 +57,8 @@ public class SearchServlet extends HttpServlet{
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+
+        long servletStartTime = System.nanoTime();
         response.setContentType("application/json"); //Response mime type
 
         // Get the session object
@@ -217,16 +226,13 @@ public class SearchServlet extends HttpServlet{
             session.setAttribute("star", star);
 
             if(session.getAttribute("title") != null && session.getAttribute("title").equals(title)){
-                System.out.println(1);
                 session.setAttribute("title", title);
             }
             else if(session.getAttribute("title") != null && !session.getAttribute("title").equals(title)){
-                System.out.println(2);
                 new_search = true;
                 session.removeAttribute("title");
             }
             else if(session.getAttribute("title") == null && !"".equals(title)){
-                System.out.println(3);
                 session.setAttribute("title", title);
                 new_search = true;
             }
@@ -235,27 +241,22 @@ public class SearchServlet extends HttpServlet{
                 session.setAttribute("director", director);
             }
             else if(session.getAttribute("director") != null && !session.getAttribute("director").equals(director) ){
-                System.out.println(4);
                 new_search = true;
                 session.removeAttribute("director");
             }
             else if(session.getAttribute("director") == null && !"".equals(director)) {
                 session.setAttribute("director", director);
-                System.out.println(5);
                 new_search = true;
             }
 
             if(session.getAttribute("year") != null && session.getAttribute("year").equals(year)){
-                System.out.println(6);
                 session.setAttribute("year", year);
             }
             else if(session.getAttribute("year") != null && !session.getAttribute("year").equals(year)){
-                System.out.println(7);
                 new_search = true;
                 session.removeAttribute("year");
             }
             else if(session.getAttribute("year") == null && !"".equals(year)){
-                System.out.println(8);
                 session.setAttribute("year", year);
                 new_search = true;
             }
@@ -471,8 +472,13 @@ public class SearchServlet extends HttpServlet{
                 statement.setInt(6, offset);
             }
 
+            long jdbcStartTime = System.nanoTime();
+
             // Perform the query
             ResultSet rs = statement.executeQuery();
+
+            long jdbcEndTime = System.nanoTime();
+            long jdbcElapsedTime = jdbcEndTime - jdbcStartTime;
 
             JsonArray jsonArray = new JsonArray();
 
@@ -504,6 +510,25 @@ public class SearchServlet extends HttpServlet{
             }
             rs.close();
             statement.close();
+
+            long servletEndTime = System.nanoTime();
+            long servletElapsedTime = servletEndTime - servletStartTime;
+
+
+            String path = getServletContext().getRealPath("/") + "log.txt";
+            System.out.println(path);
+            try (FileWriter fw = new FileWriter(path, true);
+                 BufferedWriter bw = new BufferedWriter(fw);
+                 PrintWriter outt = new PrintWriter(bw)) {
+                outt.println("JDBC Time: " + jdbcElapsedTime);
+                outt.println("Servlet Time: " + servletElapsedTime);
+
+                System.out.println("wrote or appended to file");
+            } catch (IOException e) {
+                //exception handling
+                System.out.println("not able to create or append to file");
+            }
+
 
             // Write JSON string to output
             out.write(jsonArray.toString());
