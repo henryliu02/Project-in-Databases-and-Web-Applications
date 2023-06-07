@@ -11,7 +11,7 @@
               type="javax.sql.DataSource"
               username="mytestuser"
               password="mypassword"
-              url="jdbc:mysql://35.171.149.244:3306/moviedb?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;cachePrepStmts=true"/>
+              url="jdbc:mysql://172.31.95.174:3306/moviedb?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;cachePrepStmts=true"/>
 
     <!-- Defines a Data Source for read-only operations -->
     <Resource name="jdbc/moviedbSlave"
@@ -22,6 +22,6 @@
               type="javax.sql.DataSource"
               username="mytestuser"
               password="mypassword"
-              url="jdbc:mysql://44.193.188.22:3306/moviedb?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;cachePrepStmts=true"/>
+              url="jdbc:mysql://172.31.89.46:3306/moviedb?autoReconnect=true&amp;allowPublicKeyRetrieval=true&amp;useSSL=false&amp;cachePrepStmts=true"/>
 </Context>
 
