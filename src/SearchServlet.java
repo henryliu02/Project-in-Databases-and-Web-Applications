@@ -1,5 +1,6 @@
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import java.util.Random;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
@@ -10,6 +11,8 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
+import java.io.BufferedWriter;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.sql.Connection;
@@ -33,15 +36,22 @@ public class SearchServlet extends HttpServlet{
 
     // create a database which is registered in web.xml
     private DataSource dataSource;
+    private DataSource dataSource2;
     private Set<String> stopwords;
 
     public void init(ServletConfig config)  {
         try{
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            super.init(config);
+//            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            dataSource2 = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbMaster");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbSlave");
+
         }catch (NamingException e){
             e.printStackTrace();
+        } catch (ServletException e) {
+            throw new RuntimeException(e);
         }
-         stopwords = new HashSet<>(Arrays.asList(
+        stopwords = new HashSet<>(Arrays.asList(
                  "a", "about", "an", "are", "as", "at", "be", "by", "com", "de", "en",
                  "for", "from", "how", "i", "in", "is", "it", "la", "of", "on", "or",
                  "that", "the", "this", "to", "was", "what", "when", "where", "who",
@@ -50,6 +60,8 @@ public class SearchServlet extends HttpServlet{
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws IOException{
+
+        long servletStartTime = System.nanoTime();
         response.setContentType("application/json"); //Response mime type
 
         // Get the session object
@@ -217,16 +229,13 @@ public class SearchServlet extends HttpServlet{
             session.setAttribute("star", star);
 
             if(session.getAttribute("title") != null && session.getAttribute("title").equals(title)){
-                System.out.println(1);
                 session.setAttribute("title", title);
             }
             else if(session.getAttribute("title") != null && !session.getAttribute("title").equals(title)){
-                System.out.println(2);
                 new_search = true;
                 session.removeAttribute("title");
             }
             else if(session.getAttribute("title") == null && !"".equals(title)){
-                System.out.println(3);
                 session.setAttribute("title", title);
                 new_search = true;
             }
@@ -235,27 +244,22 @@ public class SearchServlet extends HttpServlet{
                 session.setAttribute("director", director);
             }
             else if(session.getAttribute("director") != null && !session.getAttribute("director").equals(director) ){
-                System.out.println(4);
                 new_search = true;
                 session.removeAttribute("director");
             }
             else if(session.getAttribute("director") == null && !"".equals(director)) {
                 session.setAttribute("director", director);
-                System.out.println(5);
                 new_search = true;
             }
 
             if(session.getAttribute("year") != null && session.getAttribute("year").equals(year)){
-                System.out.println(6);
                 session.setAttribute("year", year);
             }
             else if(session.getAttribute("year") != null && !session.getAttribute("year").equals(year)){
-                System.out.println(7);
                 new_search = true;
                 session.removeAttribute("year");
             }
             else if(session.getAttribute("year") == null && !"".equals(year)){
-                System.out.println(8);
                 session.setAttribute("year", year);
                 new_search = true;
             }
@@ -371,14 +375,6 @@ public class SearchServlet extends HttpServlet{
         request.getServletContext().log("getting sort option: " + sortOption);
 
 
-
-        // check if should find all title starts with non alphanumeric characters
-//        String title_match_query = " (m.title LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.title), '%'))\n";
-//        String title_match_query = "IF(? = '' OR ? IS NULL,\n" +
-//                "     1,   -- True condition: if ? is empty or null, return all rows\n" +
-//                "     MATCH (m.title) AGAINST (?) > 0  -- False condition: if ? is not empty/null, match against m.title\n" +
-//                "  )\n";
-
         String joinedTokens = "";
         if (title != null && !title.equals("")) {
             List<String> tokens = Arrays.asList(title.split(" "));
@@ -405,125 +401,157 @@ public class SearchServlet extends HttpServlet{
 
         // Output stream to STDOUT
         PrintWriter out = response.getWriter();
+        Random rand = new Random();
 
-        // Get a connection from dataSource and let resource manager close the connection after usage.
-        try (Connection conn = dataSource.getConnection()) {
-            // Get a connection from dataSource
+        DataSource chosenDataSource;
 
-            // Construct a query with parameter represented by "?"
-            String query = "SELECT m.id, m.title, m.year, m.director,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres_id,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
-                    "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
-                    "       ROUND(AVG(r.rating),2) AS rating\n" +
-                    "FROM ratings AS r\n" +
-                    "RIGHT JOIN movies AS m ON r.movieId = m.id\n" +
-                    "LEFT JOIN stars_in_movies AS sim ON m.id = sim.movieId\n" +
-                    "LEFT JOIN stars AS s ON sim.starId = s.id\n" +
-                    "LEFT JOIN genres_in_movies AS gim ON m.id = gim.movieId\n" +
-                    "LEFT JOIN genres AS g ON gim.genreId = g.id\n" +
-                    "LEFT JOIN (\n" +
-                    "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
-                    "    FROM stars_in_movies AS sim\n" +
-                    "    GROUP BY sim.starId\n" +
-                    ") AS mdb ON s.id = mdb.starId\n" +
-                    "WHERE " +
-                        title_match_query +
-                    "  AND m.year = COALESCE(NULLIF(?, ''), m.year)\n" +
-                    "  AND (m.director LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.director), '%'))\n" +
-                    "  AND (? = '' OR EXISTS (\n" +
-                    "    SELECT 1\n" +
-                    "    FROM stars AS s2\n" +
-                    "    INNER JOIN stars_in_movies AS sim2 ON s2.id = sim2.starId\n" +
-                    "    WHERE s2.name LIKE CONCAT('%', COALESCE(NULLIF(?, ''), s2.name), '%') AND sim2.movieId = m.id\n" +
-                    "))\n" +
-                    "GROUP BY m.id, m.title, m.year, m.director\n"+
-                    sortQuery +
-                    "    LIMIT ?\n" +
-                    "    OFFSET ?;";
-
-
-
-            // Declare our statement
-            PreparedStatement statement = conn.prepareStatement(query);
-
-            // Set the parameter represented by "?" in the query to the id we get from url,
-            // num 1 indicates the first "?" in the query
-            if(!special_title) {
-                statement.setString(1, joinedTokens);
-                statement.setString(2, joinedTokens);
-
-                statement.setString(3, joinedTokens);
-                statement.setString(4, year);
-                statement.setString(5, director);
-                statement.setString(6, star);
-                statement.setString(7, star);
-                statement.setInt(8, numResultsPerPage);
-                statement.setInt(9, offset);
-            }
-            else {
-                statement.setString(1, year);
-                statement.setString(2, director);
-                statement.setString(3, star);
-                statement.setString(4, star);
-                statement.setInt(5, numResultsPerPage);
-                statement.setInt(6, offset);
-            }
-
-            // Perform the query
-            ResultSet rs = statement.executeQuery();
-
-            JsonArray jsonArray = new JsonArray();
-
-            // Iterate through each row of rs
-            while (rs.next()) {
-                String movie_title = rs.getString("title");
-                String movie_year = rs.getString("year");
-                String movie_director = rs.getString("director");
-                String movie_genres = rs.getString("genres");
-                String genres_id = rs.getString("genres_id");
-                String movie_stars = rs.getString("stars");
-                String stars_id = rs.getString("stars_id");
-                String movie_rating = rs.getString("rating");
-                String movie_id = rs.getString("id");
-
-                // Create a JsonObject based on the data we retrieve from rs
-                JsonObject jsonObject = new JsonObject();
-                jsonObject.addProperty("movie_title", movie_title);
-                jsonObject.addProperty("movie_year", movie_year);
-                jsonObject.addProperty("movie_director", movie_director);
-                jsonObject.addProperty("movie_genres", movie_genres);
-                jsonObject.addProperty("genres_id", genres_id);
-                jsonObject.addProperty("movie_stars", movie_stars);
-                jsonObject.addProperty("stars_id", stars_id);
-                jsonObject.addProperty("movie_rating", movie_rating);
-                jsonObject.addProperty("movie_id", movie_id);
-
-                jsonArray.add(jsonObject);
-            }
-            rs.close();
-            statement.close();
-
-            // Write JSON string to output
-            out.write(jsonArray.toString());
-            // Set response status to 200 (OK)
-            response.setStatus(200);
-
-        } catch (Exception e) {
-            // Write error message JSON object to output
-            JsonObject jsonObject = new JsonObject();
-            jsonObject.addProperty("errorMessage", e.getMessage());
-            out.write(jsonObject.toString());
-
-            // Log error to localhost log
-            request.getServletContext().log("Error:", e);
-            // Set response status to 500 (Internal Server Error)
-            response.setStatus(500);
-        } finally {
-            out.close();
+        // Toggle between the two dataSources
+        if (rand.nextBoolean()) {
+            chosenDataSource = dataSource;
+        } else {
+            chosenDataSource = dataSource2;
         }
+            // Get a connection from dataSource and let resource manager close the connection after usage.
+            try (Connection conn = chosenDataSource.getConnection()) {
+                // Get a connection from dataSource
+
+                // Construct a query with parameter represented by "?"
+                String query = "SELECT m.id, m.title, m.year, m.director,\n" +
+                        "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.name ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres,\n" +
+                        "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT g.id ORDER BY g.name ASC SEPARATOR ','), ',', 3) AS genres_id,\n" +
+                        "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.name ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars,\n" +
+                        "       SUBSTRING_INDEX(GROUP_CONCAT(DISTINCT s.id ORDER BY num_movies DESC, s.name ASC SEPARATOR ','), ',', 3) AS stars_id,\n" +
+                        "       ROUND(AVG(r.rating),2) AS rating\n" +
+                        "FROM ratings AS r\n" +
+                        "RIGHT JOIN movies AS m ON r.movieId = m.id\n" +
+                        "LEFT JOIN stars_in_movies AS sim ON m.id = sim.movieId\n" +
+                        "LEFT JOIN stars AS s ON sim.starId = s.id\n" +
+                        "LEFT JOIN genres_in_movies AS gim ON m.id = gim.movieId\n" +
+                        "LEFT JOIN genres AS g ON gim.genreId = g.id\n" +
+                        "LEFT JOIN (\n" +
+                        "    SELECT sim.starId, COUNT(DISTINCT sim.movieId) AS num_movies\n" +
+                        "    FROM stars_in_movies AS sim\n" +
+                        "    GROUP BY sim.starId\n" +
+                        ") AS mdb ON s.id = mdb.starId\n" +
+                        "WHERE " +
+                        title_match_query +
+                        "  AND m.year = COALESCE(NULLIF(?, ''), m.year)\n" +
+                        "  AND (m.director LIKE CONCAT('%', COALESCE(NULLIF(?, ''), m.director), '%'))\n" +
+                        "  AND (? = '' OR EXISTS (\n" +
+                        "    SELECT 1\n" +
+                        "    FROM stars AS s2\n" +
+                        "    INNER JOIN stars_in_movies AS sim2 ON s2.id = sim2.starId\n" +
+                        "    WHERE s2.name LIKE CONCAT('%', COALESCE(NULLIF(?, ''), s2.name), '%') AND sim2.movieId = m.id\n" +
+                        "))\n" +
+                        "GROUP BY m.id, m.title, m.year, m.director\n" +
+                        sortQuery +
+                        "    LIMIT ?\n" +
+                        "    OFFSET ?;";
+
+
+                // Declare our statement
+                PreparedStatement statement = conn.prepareStatement(query);
+
+                // Set the parameter represented by "?" in the query to the id we get from url,
+                // num 1 indicates the first "?" in the query
+                if (!special_title) {
+                    statement.setString(1, joinedTokens);
+                    statement.setString(2, joinedTokens);
+
+                    statement.setString(3, joinedTokens);
+                    statement.setString(4, year);
+                    statement.setString(5, director);
+                    statement.setString(6, star);
+                    statement.setString(7, star);
+                    statement.setInt(8, numResultsPerPage);
+                    statement.setInt(9, offset);
+                } else {
+                    statement.setString(1, year);
+                    statement.setString(2, director);
+                    statement.setString(3, star);
+                    statement.setString(4, star);
+                    statement.setInt(5, numResultsPerPage);
+                    statement.setInt(6, offset);
+                }
+
+                long jdbcStartTime = System.nanoTime();
+
+                // Perform the query
+                ResultSet rs = statement.executeQuery();
+
+                long jdbcEndTime = System.nanoTime();
+                long jdbcElapsedTime = jdbcEndTime - jdbcStartTime;
+
+                JsonArray jsonArray = new JsonArray();
+
+                // Iterate through each row of rs
+                while (rs.next()) {
+                    String movie_title = rs.getString("title");
+                    String movie_year = rs.getString("year");
+                    String movie_director = rs.getString("director");
+                    String movie_genres = rs.getString("genres");
+                    String genres_id = rs.getString("genres_id");
+                    String movie_stars = rs.getString("stars");
+                    String stars_id = rs.getString("stars_id");
+                    String movie_rating = rs.getString("rating");
+                    String movie_id = rs.getString("id");
+
+                    // Create a JsonObject based on the data we retrieve from rs
+                    JsonObject jsonObject = new JsonObject();
+                    jsonObject.addProperty("movie_title", movie_title);
+                    jsonObject.addProperty("movie_year", movie_year);
+                    jsonObject.addProperty("movie_director", movie_director);
+                    jsonObject.addProperty("movie_genres", movie_genres);
+                    jsonObject.addProperty("genres_id", genres_id);
+                    jsonObject.addProperty("movie_stars", movie_stars);
+                    jsonObject.addProperty("stars_id", stars_id);
+                    jsonObject.addProperty("movie_rating", movie_rating);
+                    jsonObject.addProperty("movie_id", movie_id);
+
+                    jsonArray.add(jsonObject);
+                }
+                rs.close();
+                statement.close();
+
+                long servletEndTime = System.nanoTime();
+                long servletElapsedTime = servletEndTime - servletStartTime;
+
+
+                String path = getServletContext().getRealPath("/") + "log.txt";
+                System.out.println(path);
+                try (FileWriter fw = new FileWriter(path, true);
+                     BufferedWriter bw = new BufferedWriter(fw);
+                     PrintWriter outt = new PrintWriter(bw)) {
+                    outt.println("JDBC Time: " + jdbcElapsedTime);
+                    outt.println("Servlet Time: " + servletElapsedTime);
+
+                    System.out.println("wrote or appended to file");
+                } catch (IOException e) {
+                    //exception handling
+                    System.out.println("not able to create or append to file");
+                }
+
+
+                // Write JSON string to output
+                out.write(jsonArray.toString());
+                // Set response status to 200 (OK)
+                response.setStatus(200);
+
+            } catch (Exception e) {
+                // Write error message JSON object to output
+                JsonObject jsonObject = new JsonObject();
+                jsonObject.addProperty("errorMessage", e.getMessage());
+                out.write(jsonObject.toString());
+
+                // Log error to localhost log
+                request.getServletContext().log("Error:", e);
+                // Set response status to 500 (Internal Server Error)
+                response.setStatus(500);
+            } finally {
+                out.close();
+            }
         // Always remember to close db connection after usage. Here it's done by try-with-resources
     }
+
 }
 

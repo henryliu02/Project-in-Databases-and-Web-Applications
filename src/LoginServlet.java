@@ -19,10 +19,12 @@ public class LoginServlet extends HttpServlet {
 
     public void init(ServletConfig config) {
         try {
-            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+//            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedb");
+            dataSource = (DataSource) new InitialContext().lookup("java:comp/env/jdbc/moviedbSlave");
             System.out.println("1: successfully connect and execute query");
         } catch (NamingException e) {
             e.printStackTrace();
+            System.out.println("failed to connect datasource");
         }
     }
 
