@@ -40,18 +40,43 @@
 
     
     - #### Explain how Connection Pooling is utilized in the Fabflix code.
+    - Connection pooling in the Fabflix code is implemented using the connection pool provided by Tomcat, a widely used web server and servlet container. This connection pool is configured in the context.xml file. 
+    - In the context.xml file, two resources are defined, one for read-write operations and another for read-only operations. These resources represent two different connection pools. The parameters for each resource (like maxTotal, maxIdle, maxWaitMillis) control the behavior of the connection pool, such as the maximum number of active connections, the maximum number of idle connections, and the maximum time to wait for an available connection.
+    - Then, in the Java servlets code, when a database connection is needed, instead of directly creating a new connection to the database (which is resource-intensive), a connection is borrowed from the connection pool using JNDI lookup (java:comp/env/jdbc/moviedbMaster or java:comp/env/jdbc/moviedbSlave). After the database operation is done, the connection is closed and returned to the pool, making it available for the next request.
     
     - #### Explain how Connection Pooling works with two backend SQL.
+    - Connection pooling works with two backend SQL servers by maintaining two separate connection pools, one for each server. This is the case in the Fabflix code, where two connection pools are defined in the context.xml file, one for the master (read-write operations) and one for the slave (read-only operations).
+    - When a read-write operation is to be performed, a connection is obtained from the master connection pool, and when a read-only operation is to be performed, a connection is obtained from the slave connection pool. This way, read and write operations are effectively distributed between the master and slave servers, optimizing the utilization of resources.
+    - Connection pooling can also work using MySQL Router, which is optional in this project. 
     
 
 - # Master/Slave
     - #### Include the filename/path of all code/configuration files in GitHub of routing queries to Master/Slave SQL.
+    - 1. AddMovieServlet.java
+    - 2. AddStarServlet.java
+    - 3. FullTextSearchServlet.java
+    - 4. GenreListServlet.java
+    - 5. GenreServlet.java
+    - 6. IndexServlet.java
+    - 7. LoginServlet.java
+    - 8. MoviesServlet.java
+    - 9. PaymentServlet.java
+    - 10. SearchServlet.java
+    - 11. ShoppingCartServlet.java
+    - 12. SingleMovieServlet.java
+    - 13. SingleStarServlet.java
 
     - #### How read/write requests were routed to Master/Slave SQL?
-    
+    - The routing of read/write requests to the master or slave SQL server is done explicitly in the application code by manually choosing the appropriate connection pool (master or slave) based on the type of operation (read or write). 
+    - If the operation is a read operation (i.e., SELECT statement), the application performs a JNDI lookup for java:comp/env/jdbc/moviedbSlave to get a connection from the slave connection pool. The request is then executed using this connection, effectively routing the read request to the slave SQL server.
+    - If the operation is a write operation (i.e., INSERT, UPDATE, DELETE statement), the application performs a JNDI lookup for java:comp/env/jdbc/moviedbMaster to get a connection from the master connection pool. The request is then executed using this connection, effectively routing the write request to the master SQL server.
 
 - # JMeter TS/TJ Time Logs
     - #### Instructions of how to use the `log_processing.*` script to process the JMeter logs.
+    - code snippet for using 'log_processing.py':
+        python3 ur_path/log_processing.py *.txt *.txt ...
+        python3 ur_path/log_processing.py *.txt
+    - log_processing.py takes arbitrary numbers of arguments(>= 1), calculates the sums up all the Query portion time and Servlet portion time and finally outputs their each individual average. 
 
 
 - # JMeter TS/TJ Time Measurement Report
