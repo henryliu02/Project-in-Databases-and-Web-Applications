@@ -40,7 +40,7 @@
 
     
     - #### Explain how Connection Pooling is utilized in the Fabflix code.
-    - Connection pooling in the Fabflix code is implemented using the connection pool provided by Tomcat, a widely used web server and servlet container. This connection pool is configured in the context.xml file. 
+    - Connection pooling in the Fabflix code is implemented using the connection pool provided by Tomcat10, this connection pool is configured in the context.xml file. 
     - In the context.xml file, two resources are defined, one for read-write operations and another for read-only operations. These resources represent two different connection pools. The parameters for each resource (like maxTotal, maxIdle, maxWaitMillis) control the behavior of the connection pool, such as the maximum number of active connections, the maximum number of idle connections, and the maximum time to wait for an available connection.
     - Then, in the Java servlets code, when a database connection is needed, instead of directly creating a new connection to the database (which is resource-intensive), a connection is borrowed from the connection pool using JNDI lookup (java:comp/env/jdbc/moviedbMaster or java:comp/env/jdbc/moviedbSlave). After the database operation is done, the connection is closed and returned to the pool, making it available for the next request.
     
