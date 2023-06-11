@@ -1,17 +1,43 @@
 - # General
     - #### Team#: CoolTeam
     
-    - #### Names: Ziheng Liu
+    - #### Names: Henry Liu
     
-    - #### Project 5 Video Demo Link:
+    - #### URLs: 
+                Single version (https): https://coolfablix.com/cs122b-project4/login.html
+                Scaled version master instance: http://35.171.149.244:8080/cs122b-project4/login.html
+                Scaled version slave instance: http://44.193.188.22:8080/cs122b-project4/login.html
+                Acess via AWS Load Balancer: http://3.87.51.210/cs122b-project4/login.html
+                Access via GCP Load Balancer: http://34.125.146.64/cs122b-project4/login.html
+    
+    - #### Project 5 Video Demo Link: https://youtu.be/KDvfqitI3eo
 
     - #### Instruction of deployment:
 
-    - #### Collaborations and Work Distribution:
+    - #### Collaborations and Work Distribution: Henry Liu
 
 
 - # Connection Pooling
     - #### Include the filename/path of all code/configuration files in GitHub of using JDBC Connection Pooling.
+    - Filename configued JDBC Connection Pooling: 
+    - META-INF/context.xml
+
+
+    - Filenames using JDBC Connection Pooling:
+    - 1. AddMovieServlet.java
+    - 2. AddStarServlet.java
+    - 3. FullTextSearchServlet.java
+    - 4. GenreListServlet.java
+    - 5. GenreServlet.java
+    - 6. IndexServlet.java
+    - 7. LoginServlet.java
+    - 8. MoviesServlet.java
+    - 9. PaymentServlet.java
+    - 10. SearchServlet.java
+    - 11. ShoppingCartServlet.java
+    - 12. SingleMovieServlet.java
+    - 13. SingleStarServlet.java
+
     
     - #### Explain how Connection Pooling is utilized in the Fabflix code.
     
