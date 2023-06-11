@@ -20,7 +20,7 @@
 - # Connection Pooling
     - #### Include the filename/path of all code/configuration files in GitHub of using JDBC Connection Pooling.
     - Filename configued JDBC Connection Pooling: 
-    - META-INF/context.xml
+    - 1. META-INF/context.xml
 
 
     - Filenames using JDBC Connection Pooling:
