@@ -76,7 +76,7 @@
     - code snippet for using 'log_processing.py':
     - python3 ur_path/log_processing.py *.txt *.txt ...
     - python3 ur_path/log_processing.py *.txt
-    - log_processing.py takes arbitrary numbers of arguments(>= 1), calculates the sums up all the Query portion time and Servlet portion time and finally outputs their each individual average. 
+    - log_processing.py takes arbitrary numbers of arguments(>= 1), calculates the sums for the Query portion time and for the Servlet portion time and finally outputs their each individual average. 
 
 
 - # JMeter TS/TJ Time Measurement Report
