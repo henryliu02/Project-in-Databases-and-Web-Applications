@@ -1,7 +1,7 @@
 - # General
     - #### Team#: CoolTeam
     
-    - #### Names: Henry Liu
+    - #### Names: Henry Liu, Yixin Zhang
     
     - #### URLs: 
                 Single version (https): https://coolfablix.com/cs122b-project4/login.html
@@ -13,8 +13,36 @@
     - #### Project 5 Video Demo Link: https://youtu.be/KDvfqitI3eo
 
     - #### Instruction of deployment:
+    - 1. **Building the application**
+   
+   - The project is built using Maven. Navigate to the project's root directory and run the following command:
+    - mvn clean package
+   - This command cleans any previous build, then builds the project. The built artifact (a WAR file) is generated in the `target` directory.
 
-    - #### Collaborations and Work Distribution: Henry Liu
+   - 2. **Deploying the application**
+
+   - **Single version deployment:**
+
+   - The WAR file is deployed on a single Tomcat 10 server. This can be done by copying the WAR file to the `webapps` directory of the Tomcat server. The server - automatically deploys the application. You can also use the Tomcat Manager application to manually deploy the WAR file.
+
+  - **Scaled version deployment:**
+
+  - The WAR file is deployed on two Tomcat 10 servers, acting as master and slave instances. 
+
+  - First, copy the WAR file to the `webapps` directory on both servers. The servers automatically deploy the applications. Alternatively, you can use the - - Tomcat Manager application on each server to manually deploy the WAR file.
+
+  - 3. **Accessing the application**
+
+ - The deployed application can be accessed via the following URLs:
+
+ - Single version: `https://coolfablix.com/cs122b-project4/login.html`
+ - Scaled version (Master instance): `http://35.171.149.244:8080/cs122b-project4/login.html`
+ - Scaled version (Slave instance): `http://44.193.188.22:8080/cs122b-project4/login.html`
+ - Via AWS Load Balancer: `http://3.87.51.210/cs122b-project4/login.html`
+ - Via GCP Load Balancer: `http://34.125.146.64/cs122b-project4/login.html`
+
+
+- #### Collaborations and Work Distribution: 100 % Henry Liu
 
 
 - # Connection Pooling
