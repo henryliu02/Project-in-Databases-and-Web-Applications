@@ -66,5 +66,5 @@
 | **Scaled Version Test Plan**                   | **Graph Results Screenshot** | **Average Query Time(ms)** | **Average Search Servlet Time(ms)** | **Average JDBC Time(ms)** | **Analysis** |
 |------------------------------------------------|------------------------------|----------------------------|-------------------------------------|---------------------------|--------------|
 | Case 1: HTTP/1 thread                          | ![img/scaled_http_1_thread.png]   | 118.17613329046762 ms| 118.94785486600713 ms | ??                        | ??           |
-| Case 2: HTTP/10 threads                        | ![img/scaled_10thread.png]  | 403.56602453656296 ms| 404.33694855080665 ms| ??    ??           |
+| Case 2: HTTP/10 threads                        | ![img/scaled_10thread.png]  | 403.56602453656296 ms| 404.33694855080665 ms| ??   | ??           |
 | Case 3: HTTP/10 threads/No connection pooling  | ![img/scaled_10thread.png]   | 472.0135441696854 ms | 472.6441489188455 ms| ??  | ??           |
